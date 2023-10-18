@@ -1,0 +1,32 @@
+    version 9.8.0
+    min version 9.8.0
+    number of documents 64
+    uses compound file true
+    diagnostics 10
+      key lucene.version
+      value 9.8.0
+      key mergeMaxNumSegments
+      value -1
+      key timestamp
+      value 1697649823317
+      key os.version
+      value 10.0
+      key java.vendor
+      value Eclipse Adoptium
+      key os
+      value Windows 11
+      key mergeFactor
+      value 10
+      key java.runtime.version
+      value 17.0.2+8
+      key os.arch
+      value amd64
+      key source
+      value merge
+    attributes 0
+    files 2
+      file _lw.scf
+      file _lw.si
+    id ˜“Ð3ÁŸñk¢Zw‰âf1’
+    sort 0
+checksum 00000000001982233120
