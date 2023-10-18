@@ -1,0 +1,35 @@
+    version 9.8.0
+    min version 9.8.0
+    number of documents 289
+    uses compound file false
+    diagnostics 10
+      key os
+      value Windows 11
+      key mergeFactor
+      value 10
+      key java.runtime.version
+      value 17.0.2+8
+      key os.arch
+      value amd64
+      key source
+      value merge
+      key lucene.version
+      value 9.8.0
+      key mergeMaxNumSegments
+      value -1
+      key timestamp
+      value 1697649608409
+      key os.version
+      value 10.0
+      key java.vendor
+      value Eclipse Adoptium
+    attributes 0
+    files 5
+      file _ds.fld
+      file _ds.si
+      file _ds.len
+      file _ds.pst
+      file _ds.inf
+    id År†nêí[∫'ßnË¯
+    sort 0
+checksum 00000000001544595084
