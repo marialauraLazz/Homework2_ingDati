@@ -1,32 +1,28 @@
     version 9.8.0
     min version 9.8.0
-    number of documents 19
+    number of documents 1
     uses compound file true
-    diagnostics 10
-      key lucene.version
-      value 9.8.0
-      key mergeMaxNumSegments
-      value -1
+    diagnostics 8
       key timestamp
-      value 1697649843364
-      key os.version
-      value 10.0
+      value 1697987427021
+      key java.runtime.version
+      value 17.0.2+8
       key java.vendor
       value Eclipse Adoptium
       key os
       value Windows 11
-      key mergeFactor
-      value 10
-      key java.runtime.version
-      value 17.0.2+8
       key os.arch
       value amd64
+      key os.version
+      value 10.0
+      key lucene.version
+      value 9.8.0
       key source
-      value merge
+      value flush
     attributes 0
     files 2
       file _u1.scf
       file _u1.si
-    id ˜“Ð3ÁŸñk¢Zw‰âf6	
+    id e¡šÈ`›Äû‡ÉV&âadË
     sort 0
-checksum 00000000003133564092
+checksum 00000000002857278818

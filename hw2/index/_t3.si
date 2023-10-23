@@ -1,0 +1,32 @@
+    version 9.8.0
+    min version 9.8.0
+    number of documents 28
+    uses compound file true
+    diagnostics 10
+      key os.arch
+      value amd64
+      key source
+      value merge
+      key lucene.version
+      value 9.8.0
+      key mergeMaxNumSegments
+      value -1
+      key timestamp
+      value 1697987424797
+      key os.version
+      value 10.0
+      key java.vendor
+      value Eclipse Adoptium
+      key os
+      value Windows 11
+      key mergeFactor
+      value 10
+      key java.runtime.version
+      value 17.0.2+8
+    attributes 0
+    files 2
+      file _t3.si
+      file _t3.scf
+    id e¡šÈ`›Äû‡ÉV&âadH
+    sort 0
+checksum 00000000001026264931

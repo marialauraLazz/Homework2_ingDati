@@ -1,0 +1,3032 @@
+cfs entry for: _tq.fld
+doc 0
+  field 0
+    name titolo
+    type string
+    value rfc4486.txt
+  field 1
+    name contenuto
+    type string
+    value \
+\
+\
+\
+\
+\
+Network Working Group                                            E. Chen\
+Request for Comments: 4486                                 Cisco Systems\
+Category: Standards Track                                      V. Gillet\
+                                                          France Telecom\
+                                                              April 2006\
+\
+\
+              Subcodes for BGP Cease Notification Message\
+\
+Status of This Memo\
+\
+   This document specifies an Internet standards track protocol for the\
+   Internet community, and requests discussion and suggestions for\
+   improvements.  Please refer to the current edition of the "Internet\
+   Official Protocol Standards" (STD 1) for the standardization state\
+   and status of this protocol.  Distribution of this memo is unlimited.\
+\
+Copyright Notice\
+\
+   Copyright (C) The Internet Society (2006).\
+\
+Abstract\
+\
+   This document defines several subcodes for the BGP Cease NOTIFICATION\
+   message that would provide more information to aid network operators\
+   in correlating network events and diagnosing BGP peering issues.\
+\
+1.  Introduction\
+\
+   This document defines several subcodes for the BGP Cease NOTIFICATION\
+   message that would provide more information to aid network operators\
+   in correlating network events and diagnosing BGP peering issues.  It\
+   also recommends that a BGP speaker implement a backoff mechanism in\
+   re-trying a BGP connection after the speaker receives a NOTIFICATION\
+   message with certain CEASE subcode.\
+\
+2.  Specification of Requirements\
+\
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",\
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this\
+   document are to be interpreted as described in RFC 2119 [RFC-2119].\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 1]\
+\
+RFC 4486        BGP Cease Notification Message Subcodes       April 2006\
+\
+\
+3.  Subcode Definition\
+\
+   The following subcodes are defined for the Cease NOTIFICATION\
+   message:\
+\
+      Subcode     Symbolic Name\
+\
+         1        Maximum Number of Prefixes Reached\
+         2        Administrative Shutdown\
+         3        Peer De-configured\
+         4        Administrative Reset\
+         5        Connection Rejected\
+         6        Other Configuration Change\
+         7        Connection Collision Resolution\
+         8        Out of Resources\
+\
+4.  Subcode Usage\
+\
+   If a BGP speaker decides to terminate its peering with a neighbor\
+   because the number of address prefixes received from the neighbor\
+   exceeds a locally configured upper bound (as described in [BGP-4]),\
+   then the speaker MUST send to the neighbor a NOTIFICATION message\
+   with the Error Code Cease and the Error Subcode "Maximum Number of\
+   Prefixes Reached".  The message MAY optionally include the Address\
+   Family information [BGP-MP] and the upper bound in the "Data" field,\
+   as shown in Figure 1, where the meaning and use of the <AFI, SAFI>\
+   tuple is the same as defined in [BGP-MP], Section 7.\
+\
+                  +-------------------------------+\
+                  | AFI (2 octets)                |\
+                  +-------------------------------+\
+                  | SAFI (1 octet)                |\
+                  +-------------------------------+\
+                  | Prefix upper bound (4 octets) |\
+                  +-------------------------------+\
+\
+                     Figure 1: Optional Data Field\
+\
+   If a BGP speaker decides to administratively shut down its peering\
+   with a neighbor, then the speaker SHOULD send a NOTIFICATION message\
+   with the Error Code Cease and the Error Subcode "Administrative\
+   Shutdown".\
+\
+   If a BGP speaker decides to de-configure a peer, then the speaker\
+   SHOULD send a NOTIFICATION message with the Error Code Cease and the\
+   Error Subcode "Peer De-configured".\
+\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 2]\
+\
+RFC 4486        BGP Cease Notification Message Subcodes       April 2006\
+\
+\
+   If a BGP speaker decides to administratively reset the peering with a\
+   neighbor, then the speaker SHOULD send a NOTIFICATION message with\
+   the Error Code Cease and the Error Subcode "Administrative Reset".\
+\
+   If a BGP speaker decides to disallow a BGP connection (e.g., the peer\
+   is not configured locally) after the speaker accepts a transport\
+   protocol connection, then the BGP speaker SHOULD send a NOTIFICATION\
+   message with the Error Code Cease and the Error Subcode "Connection\
+   Rejected".\
+\
+   If a BGP speaker decides to administratively reset the peering with a\
+   neighbor due to a configuration change other than the ones described\
+   above, then the speaker SHOULD send a NOTIFICATION message with the\
+   Error Code Cease and the Error Subcode "Other Configuration Change".\
+\
+   If a BGP speaker decides to send a NOTIFICATION message with the\
+   Error Code Cease as a result of the collision resolution procedure\
+   (as described in [BGP-4]), then the subcode SHOULD be set to\
+   "Connection Collision Resolution".\
+\
+   If a BGP speaker runs out of resources (e.g., memory) and decides to\
+   reset a session, then the speaker MAY send a NOTIFICATION message\
+   with the Error Code Cease and the Error Subcode "Out of Resources".\
+\
+   It is RECOMMENDED that a BGP speaker behave as though the\
+   DampPeerOscillations attribute [BGP-4] were true for this peer when\
+   re-trying a BGP connection after the speaker receives a Cease\
+   NOTIFICATION message with a subcode of "Administrative Shutdown",\
+   "Peer De-configured", "Connection Rejected", or "Out of Resources".\
+   An implementation SHOULD impose an upper bound on the number of\
+   consecutive automatic retries.  Once this bound is reached, the\
+   implementation would stop re-trying any BGP connections until some\
+   administrative intervention, i.e., set the AllowAutomaticStart\
+   attribute [BGP-4] to FALSE.\
+\
+5.  IANA Considerations\
+\
+   This document defines the subcodes 1 - 8 for the BGP Cease\
+   NOTIFICATION message.  Future assignments are to be made using either\
+   the Standards Action process defined in [RFC-2434], or the Early IANA\
+   Allocation process defined in [RFC-4020].  Assignments consist of a\
+   name and the value.\
+\
+6.  Security Considerations\
+\
+   This extension to BGP does not change the underlying security issues\
+   inherent in the existing BGP.\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 3]\
+\
+RFC 4486        BGP Cease Notification Message Subcodes       April 2006\
+\
+\
+7.  Acknowledgements\
+\
+   The authors would like to thank Yakov Rekhter, Pedro Marques, Andrew\
+   Lange, and Don Goodspeed for their review and suggestions.\
+\
+8.  References\
+\
+8.1.  Normative References\
+\
+   [BGP-4]    Rekhter, Y., Li, T., and S. Hares, "A Border Gateway\
+              Protocol 4 (BGP-4)", RFC 4271, January 2006.\
+\
+   [BGP-MP]   Bates, T., Rekhter, Y., Chandra, R., and D. Katz,\
+              "Multiprotocol Extensions for BGP-4", RFC 2858, June 2000.\
+\
+   [RFC-2434] Narten, T. and H. Alvestrand, "Guidelines for Writing an\
+              IANA Considerations Section in RFCs", BCP 26, RFC 2434,\
+              October 1998.\
+\
+   [RFC-2119] Bradner, S., "Key words for use in RFCs to Indicate\
+              Requirement Levels", BCP 14, RFC 2119, March 1997.\
+\
+8.2.  Informative References\
+\
+   [RFC-4020] Kompella, K. and A. Zinin, "Early IANA Allocation of\
+              Standards Track Code Points", BCP 100, RFC 4020, February\
+              2005.\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 4]\
+\
+RFC 4486        BGP Cease Notification Message Subcodes       April 2006\
+\
+\
+Authors' Addresses\
+\
+   Enke Chen\
+   Cisco Systems, Inc.\
+   170 W. Tasman Dr.\
+   San Jose, CA 95134\
+   USA\
+\
+   EMail: enkechen@cisco.com\
+\
+\
+   Vincent Gillet\
+   France Telecom Longues Distances\
+   61, rue des Archives\
+   75003 Paris FRANCE\
+\
+   EMail: vgi@opentransit.net\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 5]\
+\
+RFC 4486        BGP Cease Notification Message Subcodes       April 2006\
+\
+\
+Full Copyright Statement\
+\
+   Copyright (C) The Internet Society (2006).\
+\
+   This document is subject to the rights, licenses and restrictions\
+   contained in BCP 78, and except as set forth therein, the authors\
+   retain all their rights.\
+\
+   This document and the information contained herein are provided on an\
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS\
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET\
+   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,\
+   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE\
+   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED\
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.\
+\
+Intellectual Property\
+\
+   The IETF takes no position regarding the validity or scope of any\
+   Intellectual Property Rights or other rights that might be claimed to\
+   pertain to the implementation or use of the technology described in\
+   this document or the extent to which any license under such rights\
+   might or might not be available; nor does it represent that it has\
+   made any independent effort to identify any such rights.  Information\
+   on the procedures with respect to rights in RFC documents can be\
+   found in BCP 78 and BCP 79.\
+\
+   Copies of IPR disclosures made to the IETF Secretariat and any\
+   assurances of licenses to be made available, or the result of an\
+   attempt made to obtain a general license or permission for the use of\
+   such proprietary rights by implementers or users of this\
+   specification can be obtained from the IETF on-line IPR repository at\
+   http://www.ietf.org/ipr.\
+\
+   The IETF invites any interested party to bring to its attention any\
+   copyrights, patents or patent applications, or other proprietary\
+   rights that may cover technology that may be required to implement\
+   this standard.  Please address the information to the IETF at\
+   ietf-ipr@ietf.org.\
+\
+Acknowledgement\
+\
+   Funding for the RFC Editor function is provided by the IETF\
+   Administrative Support Activity (IASA).\
+\
+\
+\
+\
+\
+\
+\
+Chen & Gillet               Standards Track                     [Page 6]\
+\
+
+END
+checksum 00000000001974906100
+cfs entry for: _tq.inf
+number of fields 2
+  name titolo
+  number 0
+  index options DOCS_AND_FREQS_AND_POSITIONS
+  term vectors false
+  payloads false
+  norms true
+  doc values NONE
+  doc values gen -1
+  attributes 0
+  data dimensional count 0
+  index dimensional count 0
+  dimensional num bytes 0
+  vector number of dimensions 0
+  vector encoding FLOAT32
+  vector similarity EUCLIDEAN
+  soft-deletes false
+  name contenuto
+  number 1
+  index options DOCS_AND_FREQS_AND_POSITIONS
+  term vectors false
+  payloads false
+  norms true
+  doc values NONE
+  doc values gen -1
+  attributes 0
+  data dimensional count 0
+  index dimensional count 0
+  dimensional num bytes 0
+  vector number of dimensions 0
+  vector encoding FLOAT32
+  vector similarity EUCLIDEAN
+  soft-deletes false
+checksum 00000000001012915120
+cfs entry for: _tq.len
+field titolo
+  type NUMERIC
+  minvalue 1
+  pattern 0
+0
+T
+field contenuto
+  type NUMERIC
+  minvalue 90
+  pattern 0
+0
+T
+END
+checksum 00000000003948225591
+cfs entry for: _tq.pst
+field contenuto
+  term 1
+    doc 0
+      freq 8
+      pos 62
+      pos 116
+      pos 215
+      pos 241
+      pos 356
+      pos 381
+      pos 389
+      pos 764
+  term 100
+    doc 0
+      freq 1
+      pos 968
+  term 14
+    doc 0
+      freq 1
+      pos 944
+  term 170
+    doc 0
+      freq 1
+      pos 995
+  term 1997
+    doc 0
+      freq 1
+      pos 948
+  term 1998
+    doc 0
+      freq 1
+      pos 928
+  term 2
+    doc 0
+      freq 4
+      pos 175
+      pos 247
+      pos 378
+      pos 461
+  term 2000
+    doc 0
+      freq 1
+      pos 906
+  term 2005
+    doc 0
+      freq 1
+      pos 972
+  term 2006
+    doc 0
+      freq 9
+      pos 19
+      pos 85
+      pos 224
+      pos 470
+      pos 839
+      pos 886
+      pos 987
+      pos 1037
+      pos 1046
+  term 2119
+    doc 0
+      freq 4
+      pos 207
+      pos 209
+      pos 930
+      pos 946
+  term 2434
+    doc 0
+      freq 3
+      pos 787
+      pos 908
+      pos 926
+  term 26
+    doc 0
+      freq 1
+      pos 924
+  term 2858
+    doc 0
+      freq 1
+      pos 904
+  term 3
+    doc 0
+      freq 3
+      pos 225
+      pos 250
+      pos 830
+  term 4
+    doc 0
+      freq 12
+      pos 254
+      pos 272
+      pos 307
+      pos 386
+      pos 619
+      pos 680
+      pos 753
+      pos 868
+      pos 880
+      pos 882
+      pos 902
+      pos 978
+  term 4020
+    doc 0
+      freq 3
+      pos 797
+      pos 953
+      pos 970
+  term 4271
+    doc 0
+      freq 1
+      pos 884
+  term 4486
+    doc 0
+      freq 6
+      pos 8
+      pos 217
+      pos 463
+      pos 832
+      pos 980
+      pos 1030
+  term 5
+    doc 0
+      freq 3
+      pos 257
+      pos 756
+      pos 1028
+  term 6
+    doc 0
+      freq 3
+      pos 260
+      pos 806
+      pos 1362
+  term 61
+    doc 0
+      freq 1
+      pos 1013
+  term 7
+    doc 0
+      freq 3
+      pos 264
+      pos 376
+      pos 840
+  term 75003
+    doc 0
+      freq 1
+      pos 1017
+  term 78
+    doc 0
+      freq 2
+      pos 1060
+      pos 1233
+  term 79
+    doc 0
+      freq 1
+      pos 1236
+  term 8
+    doc 0
+      freq 3
+      pos 268
+      pos 765
+      pos 862
+  term 8.1
+    doc 0
+      freq 1
+      pos 864
+  term 8.2
+    doc 0
+      freq 1
+      pos 949
+  term 95134
+    doc 0
+      freq 1
+      pos 1002
+  term a
+    doc 0
+      freq 40
+      pos 151
+      pos 155
+      pos 161
+      pos 168
+      pos 276
+      pos 285
+      pos 298
+      pos 316
+      pos 394
+      pos 405
+      pos 412
+      pos 427
+      pos 434
+      pos 441
+      pos 472
+      pos 482
+      pos 489
+      pos 504
+      pos 510
+      pos 524
+      pos 534
+      pos 549
+      pos 559
+      pos 563
+      pos 577
+      pos 593
+      pos 599
+      pos 608
+      pos 631
+      pos 644
+      pos 651
+      pos 670
+      pos 689
+      pos 696
+      pos 701
+      pos 801
+      pos 876
+      pos 957
+      pos 1144
+      pos 1264
+  term above
+    doc 0
+      freq 1
+      pos 571
+  term abstract
+    doc 0
+      freq 1
+      pos 86
+  term accepts
+    doc 0
+      freq 1
+      pos 523
+  term acknowledgement
+    doc 0
+      freq 1
+      pos 1341
+  term acknowledgements
+    doc 0
+      freq 1
+      pos 841
+  term action
+    doc 0
+      freq 1
+      pos 782
+  term activity
+    doc 0
+      freq 1
+      pos 1355
+  term address
+    doc 0
+      freq 3
+      pos 291
+      pos 339
+      pos 1331
+  term addresses
+    doc 0
+      freq 1
+      pos 989
+  term administrative
+    doc 0
+      freq 7
+      pos 248
+      pos 255
+      pos 424
+      pos 501
+      pos 704
+      pos 745
+      pos 1353
+  term administratively
+    doc 0
+      freq 3
+      pos 399
+      pos 477
+      pos 554
+  term afi
+    doc 0
+      freq 2
+      pos 364
+      pos 377
+  term after
+    doc 0
+      freq 3
+      pos 164
+      pos 520
+      pos 692
+  term aid
+    doc 0
+      freq 2
+      pos 104
+      pos 135
+  term all
+    doc 0
+      freq 2
+      pos 1070
+      pos 1111
+  term allocation
+    doc 0
+      freq 2
+      pos 792
+      pos 961
+  term allowautomaticstart
+    doc 0
+      freq 1
+      pos 750
+  term also
+    doc 0
+      freq 1
+      pos 148
+  term alvestrand
+    doc 0
+      freq 1
+      pos 913
+  term an
+    doc 0
+      freq 6
+      pos 33
+      pos 715
+      pos 719
+      pos 917
+      pos 1083
+      pos 1259
+  term and
+    doc 0
+      freq 30
+      pos 42
+      pos 45
+      pos 67
+      pos 111
+      pos 142
+      pos 194
+      pos 324
+      pos 344
+      pos 360
+      pos 420
+      pos 449
+      pos 497
+      pos 542
+      pos 585
+      pos 640
+      pos 659
+      pos 803
+      pos 854
+      pos 860
+      pos 873
+      pos 895
+      pos 911
+      pos 956
+      pos 1055
+      pos 1061
+      pos 1075
+      pos 1087
+      pos 1104
+      pos 1234
+      pos 1246
+  term andrew
+    doc 0
+      freq 1
+      pos 852
+  term any
+    doc 0
+      freq 12
+      pos 740
+      pos 1100
+      pos 1121
+      pos 1133
+      pos 1136
+      pos 1160
+      pos 1190
+      pos 1209
+      pos 1214
+      pos 1247
+      pos 1300
+      pos 1308
+  term applications
+    doc 0
+      freq 1
+      pos 1313
+  term april
+    doc 0
+      freq 6
+      pos 18
+      pos 223
+      pos 469
+      pos 838
+      pos 986
+      pos 1036
+  term archives
+    doc 0
+      freq 1
+      pos 1016
+  term are
+    doc 0
+      freq 4
+      pos 199
+      pos 231
+      pos 774
+      pos 1080
+  term as
+    doc 0
+      freq 9
+      pos 203
+      pos 303
+      pos 352
+      pos 370
+      pos 607
+      pos 615
+      pos 674
+      pos 1063
+      pos 1084
+  term assignments
+    doc 0
+      freq 2
+      pos 773
+      pos 798
+  term assurances
+    doc 0
+      freq 1
+      pos 1248
+  term at
+    doc 0
+      freq 2
+      pos 1293
+      pos 1337
+  term attempt
+    doc 0
+      freq 1
+      pos 1260
+  term attention
+    doc 0
+      freq 1
+      pos 1307
+  term attribute
+    doc 0
+      freq 2
+      pos 678
+      pos 751
+  term authors
+    doc 0
+      freq 3
+      pos 843
+      pos 988
+      pos 1068
+  term automatic
+    doc 0
+      freq 1
+      pos 727
+  term available
+    doc 0
+      freq 2
+      pos 1200
+      pos 1254
+  term backoff
+    doc 0
+      freq 1
+      pos 156
+  term basis
+    doc 0
+      freq 1
+      pos 1086
+  term bates
+    doc 0
+      freq 1
+      pos 889
+  term bcp
+    doc 0
+      freq 6
+      pos 923
+      pos 943
+      pos 967
+      pos 1059
+      pos 1232
+      pos 1235
+  term be
+    doc 0
+      freq 9
+      pos 201
+      pos 624
+      pos 776
+      pos 1169
+      pos 1199
+      pos 1229
+      pos 1252
+      pos 1284
+      pos 1324
+  term because
+    doc 0
+      freq 1
+      pos 287
+  term behave
+    doc 0
+      freq 1
+      pos 673
+  term bgp
+    doc 0
+      freq 38
+      pos 22
+      pos 94
+      pos 113
+      pos 125
+      pos 144
+      pos 152
+      pos 162
+      pos 218
+      pos 277
+      pos 306
+      pos 342
+      pos 373
+      pos 395
+      pos 428
+      pos 464
+      pos 473
+      pos 505
+      pos 511
+      pos 530
+      pos 550
+      pos 594
+      pos 618
+      pos 632
+      pos 671
+      pos 679
+      pos 690
+      pos 741
+      pos 752
+      pos 768
+      pos 812
+      pos 824
+      pos 833
+      pos 867
+      pos 881
+      pos 887
+      pos 901
+      pos 981
+      pos 1031
+  term border
+    doc 0
+      freq 1
+      pos 877
+  term bound
+    doc 0
+      freq 5
+      pos 302
+      pos 347
+      pos 385
+      pos 721
+      pos 731
+  term bradner
+    doc 0
+      freq 1
+      pos 931
+  term bring
+    doc 0
+      freq 1
+      pos 1304
+  term but
+    doc 0
+      freq 1
+      pos 1117
+  term by
+    doc 0
+      freq 3
+      pos 1098
+      pos 1276
+      pos 1350
+  term c
+    doc 0
+      freq 2
+      pos 81
+      pos 1042
+  term ca
+    doc 0
+      freq 1
+      pos 1001
+  term can
+    doc 0
+      freq 2
+      pos 1228
+      pos 1283
+  term category
+    doc 0
+      freq 1
+      pos 11
+  term cease
+    doc 0
+      freq 20
+      pos 23
+      pos 95
+      pos 126
+      pos 173
+      pos 219
+      pos 235
+      pos 323
+      pos 419
+      pos 448
+      pos 465
+      pos 496
+      pos 541
+      pos 584
+      pos 606
+      pos 658
+      pos 697
+      pos 769
+      pos 834
+      pos 982
+      pos 1032
+  term certain
+    doc 0
+      freq 1
+      pos 172
+  term chandra
+    doc 0
+      freq 1
+      pos 893
+  term change
+    doc 0
+      freq 4
+      pos 263
+      pos 565
+      pos 591
+      pos 815
+  term chen
+    doc 0
+      freq 8
+      pos 4
+      pos 210
+      pos 456
+      pos 825
+      pos 973
+      pos 991
+      pos 1023
+      pos 1357
+  term cisco
+    doc 0
+      freq 2
+      pos 9
+      pos 992
+  term cisco.com
+    doc 0
+      freq 1
+      pos 1006
+  term claimed
+    doc 0
+      freq 1
+      pos 1170
+  term code
+    doc 0
+      freq 9
+      pos 322
+      pos 418
+      pos 447
+      pos 495
+      pos 540
+      pos 583
+      pos 605
+      pos 657
+      pos 965
+  term collision
+    doc 0
+      freq 3
+      pos 266
+      pos 612
+      pos 628
+  term comments
+    doc 0
+      freq 1
+      pos 7
+  term community
+    doc 0
+      freq 1
+      pos 41
+  term configuration
+    doc 0
+      freq 3
+      pos 262
+      pos 564
+      pos 590
+  term configure
+    doc 0
+      freq 1
+      pos 433
+  term configured
+    doc 0
+      freq 5
+      pos 253
+      pos 300
+      pos 455
+      pos 518
+      pos 708
+  term connection
+    doc 0
+      freq 9
+      pos 163
+      pos 258
+      pos 265
+      pos 512
+      pos 527
+      pos 546
+      pos 627
+      pos 691
+      pos 709
+  term connections
+    doc 0
+      freq 1
+      pos 742
+  term consecutive
+    doc 0
+      freq 1
+      pos 726
+  term considerations
+    doc 0
+      freq 3
+      pos 758
+      pos 808
+      pos 919
+  term consist
+    doc 0
+      freq 1
+      pos 799
+  term contained
+    doc 0
+      freq 2
+      pos 1057
+      pos 1078
+  term contributor
+    doc 0
+      freq 1
+      pos 1089
+  term copies
+    doc 0
+      freq 1
+      pos 1237
+  term copyright
+    doc 0
+      freq 4
+      pos 78
+      pos 80
+      pos 1039
+      pos 1041
+  term copyrights
+    doc 0
+      freq 1
+      pos 1309
+  term correlating
+    doc 0
+      freq 2
+      pos 108
+      pos 139
+  term cover
+    doc 0
+      freq 1
+      pos 1320
+  term current
+    doc 0
+      freq 1
+      pos 53
+  term d
+    doc 0
+      freq 1
+      pos 896
+  term damppeeroscillations
+    doc 0
+      freq 1
+      pos 677
+  term data
+    doc 0
+      freq 2
+      pos 350
+      pos 391
+  term de
+    doc 0
+      freq 4
+      pos 252
+      pos 432
+      pos 454
+      pos 707
+  term decides
+    doc 0
+      freq 8
+      pos 279
+      pos 397
+      pos 430
+      pos 475
+      pos 507
+      pos 552
+      pos 596
+      pos 641
+  term defined
+    doc 0
+      freq 4
+      pos 232
+      pos 371
+      pos 784
+      pos 794
+  term defines
+    doc 0
+      freq 3
+      pos 89
+      pos 120
+      pos 761
+  term definition
+    doc 0
+      freq 1
+      pos 227
+  term des
+    doc 0
+      freq 1
+      pos 1015
+  term described
+    doc 0
+      freq 5
+      pos 204
+      pos 304
+      pos 570
+      pos 616
+      pos 1181
+  term diagnosing
+    doc 0
+      freq 2
+      pos 112
+      pos 143
+  term disallow
+    doc 0
+      freq 1
+      pos 509
+  term disclaim
+    doc 0
+      freq 1
+      pos 1110
+  term disclosures
+    doc 0
+      freq 1
+      pos 1240
+  term discussion
+    doc 0
+      freq 1
+      pos 44
+  term distances
+    doc 0
+      freq 1
+      pos 1012
+  term distribution
+    doc 0
+      freq 1
+      pos 72
+  term document
+    doc 0
+      freq 8
+      pos 31
+      pos 88
+      pos 119
+      pos 198
+      pos 760
+      pos 1048
+      pos 1074
+      pos 1184
+  term documents
+    doc 0
+      freq 1
+      pos 1227
+  term does
+    doc 0
+      freq 2
+      pos 813
+      pos 1202
+  term don
+    doc 0
+      freq 1
+      pos 855
+  term down
+    doc 0
+      freq 1
+      pos 401
+  term dr
+    doc 0
+      freq 1
+      pos 998
+  term due
+    doc 0
+      freq 1
+      pos 561
+  term e
+    doc 0
+      freq 1
+      pos 3
+  term e.g
+    doc 0
+      freq 2
+      pos 513
+      pos 638
+  term early
+    doc 0
+      freq 2
+      pos 790
+      pos 959
+  term edition
+    doc 0
+      freq 1
+      pos 54
+  term editor
+    doc 0
+      freq 1
+      pos 1346
+  term effort
+    doc 0
+      freq 1
+      pos 1211
+  term either
+    doc 0
+      freq 1
+      pos 779
+  term email
+    doc 0
+      freq 2
+      pos 1004
+      pos 1020
+  term engineering
+    doc 0
+      freq 1
+      pos 1107
+  term enke
+    doc 0
+      freq 1
+      pos 990
+  term enkechen
+    doc 0
+      freq 1
+      pos 1005
+  term error
+    doc 0
+      freq 15
+      pos 321
+      pos 326
+      pos 417
+      pos 422
+      pos 446
+      pos 451
+      pos 494
+      pos 499
+      pos 539
+      pos 544
+      pos 582
+      pos 587
+      pos 604
+      pos 656
+      pos 661
+  term events
+    doc 0
+      freq 2
+      pos 110
+      pos 141
+  term exceeds
+    doc 0
+      freq 1
+      pos 297
+  term except
+    doc 0
+      freq 1
+      pos 1062
+  term existing
+    doc 0
+      freq 1
+      pos 823
+  term express
+    doc 0
+      freq 1
+      pos 1113
+  term extension
+    doc 0
+      freq 1
+      pos 810
+  term extensions
+    doc 0
+      freq 1
+      pos 899
+  term extent
+    doc 0
+      freq 1
+      pos 1187
+  term false
+    doc 0
+      freq 1
+      pos 755
+  term family
+    doc 0
+      freq 1
+      pos 340
+  term february
+    doc 0
+      freq 1
+      pos 971
+  term field
+    doc 0
+      freq 2
+      pos 351
+      pos 392
+  term figure
+    doc 0
+      freq 2
+      pos 355
+      pos 388
+  term fitness
+    doc 0
+      freq 1
+      pos 1142
+  term following
+    doc 0
+      freq 1
+      pos 229
+  term for
+    doc 0
+      freq 17
+      pos 6
+      pos 21
+      pos 38
+      pos 47
+      pos 63
+      pos 92
+      pos 123
+      pos 233
+      pos 683
+      pos 766
+      pos 857
+      pos 900
+      pos 915
+      pos 935
+      pos 1143
+      pos 1269
+      pos 1343
+  term force
+    doc 0
+      freq 1
+      pos 1109
+  term forth
+    doc 0
+      freq 1
+      pos 1065
+  term found
+    doc 0
+      freq 1
+      pos 1230
+  term france
+    doc 0
+      freq 3
+      pos 16
+      pos 1009
+      pos 1019
+  term from
+    doc 0
+      freq 2
+      pos 294
+      pos 1286
+  term full
+    doc 0
+      freq 1
+      pos 1038
+  term function
+    doc 0
+      freq 1
+      pos 1347
+  term funding
+    doc 0
+      freq 1
+      pos 1342
+  term future
+    doc 0
+      freq 1
+      pos 772
+  term gateway
+    doc 0
+      freq 1
+      pos 878
+  term general
+    doc 0
+      freq 1
+      pos 1265
+  term gillet
+    doc 0
+      freq 8
+      pos 15
+      pos 211
+      pos 457
+      pos 826
+      pos 974
+      pos 1008
+      pos 1024
+      pos 1358
+  term goodspeed
+    doc 0
+      freq 1
+      pos 856
+  term group
+    doc 0
+      freq 1
+      pos 2
+  term guidelines
+    doc 0
+      freq 1
+      pos 914
+  term h
+    doc 0
+      freq 1
+      pos 912
+  term hares
+    doc 0
+      freq 1
+      pos 875
+  term has
+    doc 0
+      freq 1
+      pos 1207
+  term he
+    doc 0
+      freq 1
+      pos 1092
+  term herein
+    doc 0
+      freq 2
+      pos 1079
+      pos 1129
+  term http
+    doc 0
+      freq 1
+      pos 1294
+  term i.e
+    doc 0
+      freq 1
+      pos 747
+  term iana
+    doc 0
+      freq 4
+      pos 757
+      pos 791
+      pos 918
+      pos 960
+  term iasa
+    doc 0
+      freq 1
+      pos 1356
+  term identify
+    doc 0
+      freq 1
+      pos 1213
+  term ietf
+    doc 0
+      freq 7
+      pos 1150
+      pos 1244
+      pos 1288
+      pos 1298
+      pos 1336
+      pos 1338
+      pos 1352
+  term ietf.org
+    doc 0
+      freq 1
+      pos 1340
+  term if
+    doc 0
+      freq 9
+      pos 275
+      pos 393
+      pos 426
+      pos 471
+      pos 503
+      pos 548
+      pos 592
+      pos 630
+      pos 1099
+  term implement
+    doc 0
+      freq 2
+      pos 154
+      pos 1327
+  term implementation
+    doc 0
+      freq 3
+      pos 716
+      pos 735
+      pos 1175
+  term implementers
+    doc 0
+      freq 1
+      pos 1277
+  term implied
+    doc 0
+      freq 2
+      pos 1115
+      pos 1137
+  term impose
+    doc 0
+      freq 1
+      pos 718
+  term improvements
+    doc 0
+      freq 1
+      pos 48
+  term inc
+    doc 0
+      freq 1
+      pos 994
+  term include
+    doc 0
+      freq 1
+      pos 337
+  term including
+    doc 0
+      freq 1
+      pos 1116
+  term independent
+    doc 0
+      freq 1
+      pos 1210
+  term indicate
+    doc 0
+      freq 1
+      pos 940
+  term information
+    doc 0
+      freq 7
+      pos 102
+      pos 133
+      pos 341
+      pos 1077
+      pos 1128
+      pos 1217
+      pos 1333
+  term informative
+    doc 0
+      freq 1
+      pos 950
+  term infringe
+    doc 0
+      freq 1
+      pos 1132
+  term inherent
+    doc 0
+      freq 1
+      pos 820
+  term intellectual
+    doc 0
+      freq 2
+      pos 1147
+      pos 1161
+  term interested
+    doc 0
+      freq 1
+      pos 1301
+  term internet
+    doc 0
+      freq 7
+      pos 34
+      pos 40
+      pos 57
+      pos 83
+      pos 1044
+      pos 1102
+      pos 1106
+  term interpreted
+    doc 0
+      freq 1
+      pos 202
+  term intervention
+    doc 0
+      freq 1
+      pos 746
+  term introduction
+    doc 0
+      freq 1
+      pos 117
+  term invites
+    doc 0
+      freq 1
+      pos 1299
+  term ipr
+    doc 0
+      freq 4
+      pos 1239
+      pos 1291
+      pos 1296
+      pos 1339
+  term is
+    doc 0
+      freq 9
+      pos 76
+      pos 367
+      pos 516
+      pos 667
+      pos 732
+      pos 1049
+      pos 1085
+      pos 1096
+      pos 1348
+  term issues
+    doc 0
+      freq 3
+      pos 115
+      pos 146
+      pos 819
+  term it
+    doc 0
+      freq 4
+      pos 147
+      pos 666
+      pos 1203
+      pos 1206
+  term its
+    doc 0
+      freq 3
+      pos 282
+      pos 402
+      pos 1306
+  term january
+    doc 0
+      freq 1
+      pos 885
+  term jose
+    doc 0
+      freq 1
+      pos 1000
+  term june
+    doc 0
+      freq 1
+      pos 905
+  term k
+    doc 0
+      freq 1
+      pos 955
+  term katz
+    doc 0
+      freq 1
+      pos 897
+  term key
+    doc 0
+      freq 2
+      pos 180
+      pos 933
+  term kompella
+    doc 0
+      freq 1
+      pos 954
+  term lange
+    doc 0
+      freq 1
+      pos 853
+  term levels
+    doc 0
+      freq 1
+      pos 942
+  term li
+    doc 0
+      freq 1
+      pos 871
+  term license
+    doc 0
+      freq 2
+      pos 1191
+      pos 1266
+  term licenses
+    doc 0
+      freq 2
+      pos 1054
+      pos 1250
+  term like
+    doc 0
+      freq 1
+      pos 845
+  term limited
+    doc 0
+      freq 1
+      pos 1119
+  term line
+    doc 0
+      freq 1
+      pos 1290
+  term locally
+    doc 0
+      freq 2
+      pos 299
+      pos 519
+  term longues
+    doc 0
+      freq 1
+      pos 1011
+  term made
+    doc 0
+      freq 5
+      pos 777
+      pos 1208
+      pos 1241
+      pos 1253
+      pos 1261
+  term march
+    doc 0
+      freq 1
+      pos 947
+  term marques
+    doc 0
+      freq 1
+      pos 851
+  term maximum
+    doc 0
+      freq 2
+      pos 242
+      pos 328
+  term may
+    doc 0
+      freq 5
+      pos 193
+      pos 335
+      pos 649
+      pos 1319
+      pos 1323
+  term meaning
+    doc 0
+      freq 1
+      pos 359
+  term mechanism
+    doc 0
+      freq 1
+      pos 157
+  term memo
+    doc 0
+      freq 2
+      pos 29
+      pos 75
+  term memory
+    doc 0
+      freq 1
+      pos 639
+  term merchantability
+    doc 0
+      freq 1
+      pos 1140
+  term message
+    doc 0
+      freq 21
+      pos 25
+      pos 97
+      pos 128
+      pos 170
+      pos 221
+      pos 237
+      pos 318
+      pos 334
+      pos 414
+      pos 443
+      pos 467
+      pos 491
+      pos 536
+      pos 579
+      pos 601
+      pos 653
+      pos 699
+      pos 771
+      pos 836
+      pos 984
+      pos 1034
+  term might
+    doc 0
+      freq 3
+      pos 1168
+      pos 1195
+      pos 1197
+  term more
+    doc 0
+      freq 2
+      pos 101
+      pos 132
+  term mp
+    doc 0
+      freq 3
+      pos 343
+      pos 374
+      pos 888
+  term multiprotocol
+    doc 0
+      freq 1
+      pos 898
+  term must
+    doc 0
+      freq 3
+      pos 182
+      pos 183
+      pos 311
+  term name
+    doc 0
+      freq 2
+      pos 240
+      pos 802
+  term narten
+    doc 0
+      freq 1
+      pos 909
+  term neighbor
+    doc 0
+      freq 6
+      pos 286
+      pos 296
+      pos 315
+      pos 406
+      pos 483
+      pos 560
+  term network
+    doc 0
+      freq 5
+      pos 0
+      pos 105
+      pos 109
+      pos 136
+      pos 140
+  term no
+    doc 0
+      freq 1
+      pos 1152
+  term nor
+    doc 0
+      freq 1
+      pos 1201
+  term normative
+    doc 0
+      freq 1
+      pos 865
+  term not
+    doc 0
+      freq 8
+      pos 184
+      pos 188
+      pos 191
+      pos 517
+      pos 814
+      pos 1118
+      pos 1131
+      pos 1198
+  term notice
+    doc 0
+      freq 1
+      pos 79
+  term notification
+    doc 0
+      freq 20
+      pos 24
+      pos 96
+      pos 127
+      pos 169
+      pos 220
+      pos 236
+      pos 317
+      pos 413
+      pos 442
+      pos 466
+      pos 490
+      pos 535
+      pos 578
+      pos 600
+      pos 652
+      pos 698
+      pos 770
+      pos 835
+      pos 983
+      pos 1033
+  term number
+    doc 0
+      freq 4
+      pos 243
+      pos 289
+      pos 329
+      pos 724
+  term obtain
+    doc 0
+      freq 1
+      pos 1263
+  term obtained
+    doc 0
+      freq 1
+      pos 1285
+  term octet
+    doc 0
+      freq 1
+      pos 382
+  term octets
+    doc 0
+      freq 2
+      pos 379
+      pos 387
+  term october
+    doc 0
+      freq 1
+      pos 927
+  term of
+    doc 0
+      freq 27
+      pos 27
+      pos 55
+      pos 69
+      pos 73
+      pos 177
+      pos 244
+      pos 270
+      pos 290
+      pos 330
+      pos 362
+      pos 610
+      pos 636
+      pos 664
+      pos 703
+      pos 713
+      pos 725
+      pos 800
+      pos 962
+      pos 1126
+      pos 1139
+      pos 1159
+      pos 1178
+      pos 1238
+      pos 1249
+      pos 1258
+      pos 1272
+      pos 1280
+  term official
+    doc 0
+      freq 1
+      pos 58
+  term once
+    doc 0
+      freq 1
+      pos 729
+  term ones
+    doc 0
+      freq 1
+      pos 569
+  term opentransit.net
+    doc 0
+      freq 1
+      pos 1022
+  term operators
+    doc 0
+      freq 2
+      pos 106
+      pos 137
+  term optional
+    doc 0
+      freq 2
+      pos 195
+      pos 390
+  term optionally
+    doc 0
+      freq 1
+      pos 336
+  term or
+    doc 0
+      freq 16
+      pos 711
+      pos 788
+      pos 1095
+      pos 1114
+      pos 1135
+      pos 1141
+      pos 1157
+      pos 1164
+      pos 1176
+      pos 1185
+      pos 1196
+      pos 1255
+      pos 1267
+      pos 1278
+      pos 1311
+      pos 1314
+  term organization
+    doc 0
+      freq 1
+      pos 1091
+  term other
+    doc 0
+      freq 5
+      pos 261
+      pos 566
+      pos 589
+      pos 1165
+      pos 1315
+  term out
+    doc 0
+      freq 4
+      pos 269
+      pos 635
+      pos 663
+      pos 712
+  term page
+    doc 0
+      freq 6
+      pos 214
+      pos 460
+      pos 829
+      pos 977
+      pos 1027
+      pos 1361
+  term paris
+    doc 0
+      freq 1
+      pos 1018
+  term particular
+    doc 0
+      freq 1
+      pos 1145
+  term party
+    doc 0
+      freq 1
+      pos 1302
+  term patent
+    doc 0
+      freq 1
+      pos 1312
+  term patents
+    doc 0
+      freq 1
+      pos 1310
+  term pedro
+    doc 0
+      freq 1
+      pos 850
+  term peer
+    doc 0
+      freq 6
+      pos 251
+      pos 435
+      pos 453
+      pos 515
+      pos 685
+      pos 706
+  term peering
+    doc 0
+      freq 6
+      pos 114
+      pos 145
+      pos 283
+      pos 403
+      pos 480
+      pos 557
+  term permission
+    doc 0
+      freq 1
+      pos 1268
+  term pertain
+    doc 0
+      freq 1
+      pos 1172
+  term please
+    doc 0
+      freq 2
+      pos 49
+      pos 1330
+  term points
+    doc 0
+      freq 1
+      pos 966
+  term position
+    doc 0
+      freq 1
+      pos 1153
+  term prefix
+    doc 0
+      freq 1
+      pos 383
+  term prefixes
+    doc 0
+      freq 3
+      pos 245
+      pos 292
+      pos 331
+  term procedure
+    doc 0
+      freq 1
+      pos 614
+  term procedures
+    doc 0
+      freq 1
+      pos 1220
+  term process
+    doc 0
+      freq 2
+      pos 783
+      pos 793
+  term property
+    doc 0
+      freq 2
+      pos 1148
+      pos 1162
+  term proprietary
+    doc 0
+      freq 2
+      pos 1274
+      pos 1316
+  term protocol
+    doc 0
+      freq 5
+      pos 37
+      pos 59
+      pos 71
+      pos 526
+      pos 879
+  term provide
+    doc 0
+      freq 2
+      pos 100
+      pos 131
+  term provided
+    doc 0
+      freq 2
+      pos 1081
+      pos 1349
+  term purpose
+    doc 0
+      freq 1
+      pos 1146
+  term r
+    doc 0
+      freq 1
+      pos 894
+  term re
+    doc 0
+      freq 3
+      pos 159
+      pos 687
+      pos 738
+  term reached
+    doc 0
+      freq 3
+      pos 246
+      pos 332
+      pos 733
+  term received
+    doc 0
+      freq 1
+      pos 293
+  term receives
+    doc 0
+      freq 2
+      pos 167
+      pos 695
+  term recommended
+    doc 0
+      freq 2
+      pos 192
+      pos 668
+  term recommends
+    doc 0
+      freq 1
+      pos 149
+  term refer
+    doc 0
+      freq 1
+      pos 50
+  term references
+    doc 0
+      freq 3
+      pos 863
+      pos 866
+      pos 951
+  term regarding
+    doc 0
+      freq 1
+      pos 1154
+  term rejected
+    doc 0
+      freq 3
+      pos 259
+      pos 547
+      pos 710
+  term rekhter
+    doc 0
+      freq 3
+      pos 849
+      pos 869
+      pos 891
+  term repository
+    doc 0
+      freq 1
+      pos 1292
+  term represent
+    doc 0
+      freq 1
+      pos 1204
+  term represents
+    doc 0
+      freq 1
+      pos 1094
+  term request
+    doc 0
+      freq 1
+      pos 5
+  term requests
+    doc 0
+      freq 1
+      pos 43
+  term required
+    doc 0
+      freq 2
+      pos 185
+      pos 1325
+  term requirement
+    doc 0
+      freq 1
+      pos 941
+  term requirements
+    doc 0
+      freq 1
+      pos 178
+  term reset
+    doc 0
+      freq 5
+      pos 256
+      pos 478
+      pos 502
+      pos 555
+      pos 643
+  term resolution
+    doc 0
+      freq 3
+      pos 267
+      pos 613
+      pos 629
+  term resources
+    doc 0
+      freq 4
+      pos 271
+      pos 637
+      pos 665
+      pos 714
+  term respect
+    doc 0
+      freq 1
+      pos 1222
+  term restrictions
+    doc 0
+      freq 1
+      pos 1056
+  term result
+    doc 0
+      freq 2
+      pos 609
+      pos 1257
+  term retain
+    doc 0
+      freq 1
+      pos 1069
+  term retries
+    doc 0
+      freq 1
+      pos 728
+  term review
+    doc 0
+      freq 1
+      pos 859
+  term rfc
+    doc 0
+      freq 19
+      pos 206
+      pos 208
+      pos 216
+      pos 462
+      pos 786
+      pos 796
+      pos 831
+      pos 883
+      pos 903
+      pos 907
+      pos 925
+      pos 929
+      pos 945
+      pos 952
+      pos 969
+      pos 979
+      pos 1029
+      pos 1226
+      pos 1345
+  term rfcs
+    doc 0
+      freq 2
+      pos 922
+      pos 938
+  term rights
+    doc 0
+      freq 10
+      pos 1053
+      pos 1072
+      pos 1134
+      pos 1163
+      pos 1166
+      pos 1194
+      pos 1216
+      pos 1224
+      pos 1275
+      pos 1317
+  term rue
+    doc 0
+      freq 1
+      pos 1014
+  term runs
+    doc 0
+      freq 1
+      pos 634
+  term s
+    doc 0
+      freq 2
+      pos 874
+      pos 932
+  term safi
+    doc 0
+      freq 2
+      pos 365
+      pos 380
+  term same
+    doc 0
+      freq 1
+      pos 369
+  term san
+    doc 0
+      freq 1
+      pos 999
+  term scope
+    doc 0
+      freq 1
+      pos 1158
+  term secretariat
+    doc 0
+      freq 1
+      pos 1245
+  term section
+    doc 0
+      freq 2
+      pos 375
+      pos 920
+  term security
+    doc 0
+      freq 2
+      pos 807
+      pos 818
+  term send
+    doc 0
+      freq 8
+      pos 312
+      pos 411
+      pos 440
+      pos 488
+      pos 533
+      pos 576
+      pos 598
+      pos 650
+  term session
+    doc 0
+      freq 1
+      pos 645
+  term set
+    doc 0
+      freq 3
+      pos 625
+      pos 748
+      pos 1064
+  term several
+    doc 0
+      freq 2
+      pos 90
+      pos 121
+  term shall
+    doc 0
+      freq 2
+      pos 186
+      pos 187
+  term she
+    doc 0
+      freq 1
+      pos 1093
+  term should
+    doc 0
+      freq 9
+      pos 189
+      pos 190
+      pos 410
+      pos 439
+      pos 487
+      pos 532
+      pos 575
+      pos 623
+      pos 717
+  term shown
+    doc 0
+      freq 1
+      pos 353
+  term shut
+    doc 0
+      freq 1
+      pos 400
+  term shutdown
+    doc 0
+      freq 3
+      pos 249
+      pos 425
+      pos 705
+  term society
+    doc 0
+      freq 3
+      pos 84
+      pos 1045
+      pos 1103
+  term some
+    doc 0
+      freq 1
+      pos 744
+  term speaker
+    doc 0
+      freq 20
+      pos 153
+      pos 166
+      pos 278
+      pos 310
+      pos 396
+      pos 409
+      pos 429
+      pos 438
+      pos 474
+      pos 486
+      pos 506
+      pos 522
+      pos 531
+      pos 551
+      pos 574
+      pos 595
+      pos 633
+      pos 648
+      pos 672
+      pos 694
+  term specification
+    doc 0
+      freq 2
+      pos 176
+      pos 1282
+  term specifies
+    doc 0
+      freq 1
+      pos 32
+  term sponsored
+    doc 0
+      freq 1
+      pos 1097
+  term standard
+    doc 0
+      freq 1
+      pos 1329
+  term standardization
+    doc 0
+      freq 1
+      pos 65
+  term standards
+    doc 0
+      freq 11
+      pos 12
+      pos 35
+      pos 60
+      pos 212
+      pos 458
+      pos 781
+      pos 827
+      pos 963
+      pos 975
+      pos 1025
+      pos 1359
+  term state
+    doc 0
+      freq 1
+      pos 66
+  term statement
+    doc 0
+      freq 1
+      pos 1040
+  term status
+    doc 0
+      freq 2
+      pos 26
+      pos 68
+  term std
+    doc 0
+      freq 1
+      pos 61
+  term stop
+    doc 0
+      freq 1
+      pos 737
+  term subcode
+    doc 0
+      freq 13
+      pos 174
+      pos 226
+      pos 238
+      pos 273
+      pos 327
+      pos 423
+      pos 452
+      pos 500
+      pos 545
+      pos 588
+      pos 622
+      pos 662
+      pos 702
+  term subcodes
+    doc 0
+      freq 10
+      pos 20
+      pos 91
+      pos 122
+      pos 222
+      pos 230
+      pos 468
+      pos 763
+      pos 837
+      pos 985
+      pos 1035
+  term subject
+    doc 0
+      freq 1
+      pos 1050
+  term such
+    doc 0
+      freq 3
+      pos 1193
+      pos 1215
+      pos 1273
+  term suggestions
+    doc 0
+      freq 2
+      pos 46
+      pos 861
+  term support
+    doc 0
+      freq 1
+      pos 1354
+  term symbolic
+    doc 0
+      freq 1
+      pos 239
+  term systems
+    doc 0
+      freq 2
+      pos 10
+      pos 993
+  term t
+    doc 0
+      freq 3
+      pos 872
+      pos 890
+      pos 910
+  term takes
+    doc 0
+      freq 1
+      pos 1151
+  term task
+    doc 0
+      freq 1
+      pos 1108
+  term tasman
+    doc 0
+      freq 1
+      pos 997
+  term technology
+    doc 0
+      freq 2
+      pos 1180
+      pos 1321
+  term telecom
+    doc 0
+      freq 2
+      pos 17
+      pos 1010
+  term terminate
+    doc 0
+      freq 1
+      pos 281
+  term than
+    doc 0
+      freq 1
+      pos 567
+  term thank
+    doc 0
+      freq 1
+      pos 847
+  term that
+    doc 0
+      freq 9
+      pos 98
+      pos 129
+      pos 150
+      pos 669
+      pos 1123
+      pos 1167
+      pos 1205
+      pos 1318
+      pos 1322
+  term the
+    doc 0
+      freq 88
+      pos 39
+      pos 52
+      pos 56
+      pos 64
+      pos 82
+      pos 93
+      pos 124
+      pos 165
+      pos 179
+      pos 228
+      pos 234
+      pos 288
+      pos 295
+      pos 309
+      pos 314
+      pos 320
+      pos 325
+      pos 333
+      pos 338
+      pos 345
+      pos 349
+      pos 358
+      pos 363
+      pos 368
+      pos 408
+      pos 416
+      pos 421
+      pos 437
+      pos 445
+      pos 450
+      pos 479
+      pos 485
+      pos 493
+      pos 498
+      pos 514
+      pos 521
+      pos 529
+      pos 538
+      pos 543
+      pos 556
+      pos 568
+      pos 573
+      pos 581
+      pos 586
+      pos 603
+      pos 611
+      pos 621
+      pos 647
+      pos 655
+      pos 660
+      pos 676
+      pos 693
+      pos 723
+      pos 734
+      pos 749
+      pos 762
+      pos 767
+      pos 780
+      pos 789
+      pos 804
+      pos 816
+      pos 822
+      pos 842
+      pos 1043
+      pos 1052
+      pos 1067
+      pos 1076
+      pos 1088
+      pos 1090
+      pos 1101
+      pos 1105
+      pos 1124
+      pos 1127
+      pos 1149
+      pos 1155
+      pos 1174
+      pos 1179
+      pos 1186
+      pos 1219
+      pos 1243
+      pos 1256
+      pos 1270
+      pos 1287
+      pos 1297
+      pos 1332
+      pos 1335
+      pos 1344
+      pos 1351
+  term their
+    doc 0
+      freq 2
+      pos 858
+      pos 1071
+  term then
+    doc 0
+      freq 8
+      pos 308
+      pos 407
+      pos 436
+      pos 484
+      pos 528
+      pos 572
+      pos 620
+      pos 646
+  term therein
+    doc 0
+      freq 1
+      pos 1066
+  term this
+    doc 0
+      freq 16
+      pos 28
+      pos 30
+      pos 70
+      pos 74
+      pos 87
+      pos 118
+      pos 197
+      pos 684
+      pos 730
+      pos 759
+      pos 809
+      pos 1047
+      pos 1073
+      pos 1183
+      pos 1281
+      pos 1328
+  term though
+    doc 0
+      freq 1
+      pos 675
+  term track
+    doc 0
+      freq 9
+      pos 13
+      pos 36
+      pos 213
+      pos 459
+      pos 828
+      pos 964
+      pos 976
+      pos 1026
+      pos 1360
+  term transport
+    doc 0
+      freq 1
+      pos 525
+  term true
+    doc 0
+      freq 1
+      pos 682
+  term trying
+    doc 0
+      freq 3
+      pos 160
+      pos 688
+      pos 739
+  term tuple
+    doc 0
+      freq 1
+      pos 366
+  term under
+    doc 0
+      freq 1
+      pos 1192
+  term underlying
+    doc 0
+      freq 1
+      pos 817
+  term unlimited
+    doc 0
+      freq 1
+      pos 77
+  term until
+    doc 0
+      freq 1
+      pos 743
+  term upper
+    doc 0
+      freq 4
+      pos 301
+      pos 346
+      pos 384
+      pos 720
+  term usa
+    doc 0
+      freq 1
+      pos 1003
+  term usage
+    doc 0
+      freq 1
+      pos 274
+  term use
+    doc 0
+      freq 5
+      pos 361
+      pos 936
+      pos 1125
+      pos 1177
+      pos 1271
+  term users
+    doc 0
+      freq 1
+      pos 1279
+  term using
+    doc 0
+      freq 1
+      pos 778
+  term v
+    doc 0
+      freq 1
+      pos 14
+  term validity
+    doc 0
+      freq 1
+      pos 1156
+  term value
+    doc 0
+      freq 1
+      pos 805
+  term vgi
+    doc 0
+      freq 1
+      pos 1021
+  term vincent
+    doc 0
+      freq 1
+      pos 1007
+  term w
+    doc 0
+      freq 1
+      pos 996
+  term warranties
+    doc 0
+      freq 2
+      pos 1112
+      pos 1138
+  term warranty
+    doc 0
+      freq 1
+      pos 1122
+  term were
+    doc 0
+      freq 1
+      pos 681
+  term when
+    doc 0
+      freq 1
+      pos 686
+  term where
+    doc 0
+      freq 1
+      pos 357
+  term which
+    doc 0
+      freq 1
+      pos 1189
+  term will
+    doc 0
+      freq 1
+      pos 1130
+  term with
+    doc 0
+      freq 15
+      pos 171
+      pos 284
+      pos 319
+      pos 404
+      pos 415
+      pos 444
+      pos 481
+      pos 492
+      pos 537
+      pos 558
+      pos 580
+      pos 602
+      pos 654
+      pos 700
+      pos 1221
+  term words
+    doc 0
+      freq 2
+      pos 181
+      pos 934
+  term working
+    doc 0
+      freq 1
+      pos 1
+  term would
+    doc 0
+      freq 4
+      pos 99
+      pos 130
+      pos 736
+      pos 844
+  term writing
+    doc 0
+      freq 1
+      pos 916
+  term www.ietf.org
+    doc 0
+      freq 1
+      pos 1295
+  term y
+    doc 0
+      freq 2
+      pos 870
+      pos 892
+  term yakov
+    doc 0
+      freq 1
+      pos 848
+  term zinin
+    doc 0
+      freq 1
+      pos 958
+field titolo
+  term rfc4486.txt
+    doc 0
+      freq 1
+      pos 0
+END
+checksum 00000000000230123928
+table of contents, size: 4
+  filename: _tq.fld
+    start: 23
+    end: 10776
+  filename: _tq.inf
+    start: 10799
+    end: 11579
+  filename: _tq.len
+    start: 11602
+    end: 11754
+  filename: _tq.pst
+    start: 11777
+    end: 46631
+table of contents begins at offset: 0000000000000046631

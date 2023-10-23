@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.it.ItalianAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.codecs.simpletext.SimpleTextCodec;
@@ -30,15 +30,18 @@ public class indexer{
 	public static void main(String[] args)throws IOException {
 
 		Map<String, Analyzer> perFieldAnalyzers = new HashMap<>();
-		CharArraySet stopWords = new CharArraySet(Arrays.asList("in", "dei", "di"), true);
-		perFieldAnalyzers.put(" titolo", new WhitespaceAnalyzer());
-		perFieldAnalyzers.put(" contenuto", new StandardAnalyzer(stopWords));
-		Analyzer analyzer = new PerFieldAnalyzerWrapper(new ItalianAnalyzer(), perFieldAnalyzers);
+		CharArraySet stopWords = new CharArraySet(Arrays.asList("in", "on", "to"), true);
+		
+		perFieldAnalyzers.put("titolo", new KeywordAnalyzer());
+		perFieldAnalyzers.put("contenuto", new StandardAnalyzer(stopWords));
+		Analyzer analyzer = new PerFieldAnalyzerWrapper(new EnglishAnalyzer(), perFieldAnalyzers);
+		
 		Directory indexDirectory = FSDirectory.open(Paths.get("C:\\Users\\lazla\\git\\Homework2_ingegneriaDeiDati\\hw2\\index"));
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		config.setCodec(new SimpleTextCodec());
 		IndexWriter writer = new IndexWriter(indexDirectory, config);
-				
+		writer.deleteAll();
+		
 		File fileDirectory = new File("C:\\Users\\lazla\\git\\Homework2_ingegneriaDeiDati\\hw2\\documenti");
 		File[] files = fileDirectory.listFiles();
 		for(File f: files) {

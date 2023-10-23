@@ -1,0 +1,4120 @@
+cfs entry for: _tz.fld
+doc 0
+  field 0
+    name titolo
+    type string
+    value rfc4494.txt
+  field 1
+    name contenuto
+    type string
+    value \
+\
+\
+\
+\
+\
+Network Working Group                                           JH. Song\
+Request for Comments: 4494                                 R. Poovendran\
+Category: Standards Track                       University of Washington\
+                                                                  J. Lee\
+                                                     Samsung Electronics\
+                                                               June 2006\
+\
+\
+            The AES-CMAC-96 Algorithm and Its Use with IPsec\
+\
+Status of This Memo\
+\
+   This document specifies an Internet standards track protocol for the\
+   Internet community, and requests discussion and suggestions for\
+   improvements.  Please refer to the current edition of the "Internet\
+   Official Protocol Standards" (STD 1) for the standardization state\
+   and status of this protocol.  Distribution of this memo is unlimited.\
+\
+Copyright Notice\
+\
+   Copyright (C) The Internet Society (2006).\
+\
+Abstract\
+\
+   The National Institute of Standards and Technology (NIST) has\
+   recently specified the Cipher-based Message Authentication Code\
+   (CMAC), which is equivalent to the One-Key CBC-MAC1 (OMAC1) algorithm\
+   submitted by Iwata and Kurosawa.  OMAC1 efficiently reduces the key\
+   size of Extended Cipher Block Chaining mode (XCBC).  This memo\
+   specifies the use of CMAC mode on the authentication mechanism of the\
+   IPsec Encapsulating Security Payload (ESP) and the Authentication\
+   Header (AH) protocols.  This new algorithm is named AES-CMAC-96.\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 1]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+1.  Introduction\
+\
+   The National Institute of Standards and Technology (NIST) has\
+   recently specified the Cipher-based Message Authentication Code\
+   (CMAC).  CMAC [NIST-CMAC] is a message authentication code that is\
+   based on a symmetric key block cipher such as the Advanced Encryption\
+   Standard [NIST-AES].  CMAC is equivalent to the One-Key CBC MAC1\
+   (OMAC1) submitted by Iwata and Kurosawa [OMAC1a, OMAC1b].  OMAC1 is\
+   an improvement of the eXtended Cipher Block Chaining mode (XCBC)\
+   submitted by Black and Rogaway [XCBCa, XCBCb], which itself is an\
+   improvement of the basic CBC-MAC.  XCBC efficiently addresses the\
+   security deficiencies of CBC-MAC, and OMAC1 efficiently reduces the\
+   key size of XCBC.\
+\
+   This memo specifies the usage of CMAC on the authentication mechanism\
+   of the IPsec Encapsulating Security Payload [ESP] and Authentication\
+   Header [AH] protocols.  This new algorithm is named AES-CMAC-96.  For\
+   further information on AH and ESP, refer to [AH] and [ROADMAP].\
+\
+2.  Basic Definitions\
+\
+   CBC             Cipher Block Chaining mode of operation for message\
+                   authentication code.\
+\
+   MAC             Message Authentication Code.\
+                   A bit string of a fixed length, computed by the MAC\
+                   generation algorithm, that is used to establish the\
+                   authority and, hence, the integrity of a message.\
+\
+   CMAC            Cipher-based MAC based on an approved symmetric key\
+                   block cipher, such as the Advanced Encryption\
+                   Standard.\
+\
+   Key (K)         128-bit (16-octet) key for AES-128 cipher block.\
+                   Denoted by K.\
+\
+   Message (M)     Message to be authenticated.\
+                   Denoted by M.\
+\
+   Length (len)    The length of message M in octets.\
+                   Denoted by len.\
+                   The minimum value is 0.  The maximum value is not\
+                   specified in this document.\
+\
+   truncate(T,l)   Truncate T (MAC) in most-significant-bit-first\
+                   (MSB-first) order to a length of l octets.\
+\
+   T               The output of AES-CMAC.\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 2]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+   Truncated T     The truncated output of AES-CMAC-128 in MSB-first\
+                   order.\
+\
+   AES-CMAC        CMAC generation function based on AES block cipher\
+                   with 128-bit key.\
+\
+   AES-CMAC-96     IPsec AH and ESP MAC generation function based on\
+                   AES-CMAC, which truncates the 96 most significant\
+                   bits of the 128-bit output.\
+\
+3.  AES-CMAC\
+\
+   The core of AES-CMAC-96 is the AES-CMAC [AES-CMAC].  The underlying\
+   algorithms for AES-CMAC are the Advanced Encryption Standard cipher\
+   block [NIST-AES] and the recently defined CMAC mode of operation\
+   [NIST-CMAC].  AES-CMAC provides stronger assurance of data integrity\
+   than a checksum or an error detecting code.  The verification of a\
+   checksum or an error detecting code detects only accidental\
+   modifications of the data, while CMAC is designed to detect\
+   intentional, unauthorized modifications of the data, as well as\
+   accidental modifications.  The output of AES-CMAC can validate the\
+   input message.  Validating the message provides assurance of the\
+   integrity and authenticity over the message from the source.\
+   According to [NIST-CMAC], at least 64 bits should be used against\
+   guessing attacks.  AES-CMAC achieves the similar security goal of\
+   HMAC [RFC-HMAC].  Since AES-CMAC is based on a symmetric key block\
+   cipher (AES), while HMAC is based on a hash function (such as SHA-1),\
+   AES-CMAC is appropriate for information systems in which AES is more\
+   readily available than a hash function.  Detailed information about\
+   AES-CMAC is available in [AES-CMAC] and [NIST-CMAC].\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 3]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+4.  AES-CMAC-96\
+\
+   For IPsec message authentication on AH and ESP, AES-CMAC-96 should be\
+   used.  AES-CMAC-96 is a AES-CMAC with 96-bit truncated output in\
+   MSB-first order.  The output is a 96-bit MAC that will meet the\
+   default authenticator length as specified in [AH].  The result of\
+   truncation is taken in MSB-first order.  For further information on\
+   AES-CMAC, refer to [AES-CMAC] and [NIST-CMAC].\
+\
+   Figure 1 describes AES-CMAC-96 algorithm:\
+\
+   In step 1, AES-CMAC is applied to the message M in length len with\
+   key K.\
+\
+   In step 2, the output block T is truncated to 12 octets in MSB-first\
+   order, and Truncated T (TT) is returned.\
+\
+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+   +                    Algorithm AES-CMAC-96                          +\
+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+   +                                                                   +\
+   +   Input    : K (128-bit Key described in Section 4.1)             +\
+   +            : M    (message to be authenticated)                   +\
+   +            : len  (length of message in octets)                   +\
+   +   Output   : Truncated T  (truncated output to length 12 octets)  +\
+   +                                                                   +\
+   +-------------------------------------------------------------------+\
+   +                                                                   +\
+   +   Step 1.  T  := AES-CMAC (K,M,len);                              +\
+   +   Step 2.  TT := truncate (T, 12);                                +\
+   +            return TT;                                             +\
+   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+\
+                   Figure 1: Algorithm AES-CMAC-96\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 4]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+5.  Test Vectors\
+\
+   These test cases are the same as those defined in [NIST-CMAC], with\
+   the exception of 96-bit truncation.\
+\
+   --------------------------------------------------\
+   K              2b7e1516 28aed2a6 abf71588 09cf4f3c\
+   Subkey Generation\
+   AES_128(key,0) 7df76b0c 1ab899b3 3e42f047 b91b546f\
+   K1             fbeed618 35713366 7c85e08f 7236a8de\
+   K2             f7ddac30 6ae266cc f90bc11e e46d513b\
+\
+   Test Case 1: len = 0\
+   M              <empty string>\
+   AES_CMAC_96    bb1d6929 e9593728 7fa37d12\
+\
+   Test Case 2: len = 16\
+   M              6bc1bee2 2e409f96 e93d7e11 7393172a\
+   AES_CMAC_96    070a16b4 6b4d4144 f79bdd9d\
+\
+   Test Case 3: len = 40\
+   M              6bc1bee2 2e409f96 e93d7e11 7393172a\
+                  ae2d8a57 1e03ac9c 9eb76fac 45af8e51\
+                  30c81c46 a35ce411\
+   AES_CMAC_96    dfa66747 de9ae630 30ca3261\
+\
+   Test Case 4: len = 64\
+   M              6bc1bee2 2e409f96 e93d7e11 7393172a\
+                  ae2d8a57 1e03ac9c 9eb76fac 45af8e51\
+                  30c81c46 a35ce411 e5fbc119 1a0a52ef\
+                  f69f2445 df4f9b17 ad2b417b e66c3710\
+   AES_CMAC_96    51f0bebf 7e3b9d92 fc497417\
+   --------------------------------------------------\
+\
+6.  Interaction with the ESP Cipher Mechanism\
+\
+   As of this writing, there are no known issues that preclude the use\
+   of AES-CMAC-96 with any specific cipher algorithm.\
+\
+7.  Security Considerations\
+\
+   See the security considerations section of [AES-CMAC].\
+\
+8.  IANA Considerations\
+\
+   The IANA has allocated value 8 for IKEv2 Transform Type 3 (Integrity\
+   Algorithm) to the AUTH_AES_CMAC_96 algorithm.\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 5]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+9.  Acknowledgements\
+\
+   Portions of this text were borrowed from [NIST-CMAC] and [XCBCa].  We\
+   would like to thank to Russ Housley for his useful comments.\
+\
+   We acknowledge the support from the the following grants:\
+   Collaborative Technology Alliance (CTA) from US Army Research\
+   Laboratory, DAAD19-01-2-0011; Presidential Award from Army Research\
+   Office, W911NF-05-1-0491;  NSF CAREER, ANI-0093187.  Results do not\
+   reflect any position of the funding agencies.\
+\
+10.  References\
+\
+10.1.  Normative References\
+\
+   [AES-CMAC]  Song, JH., Poovendran, R., Lee, J., and T. Iwata, "The\
+               AES-CMAC Algorithm", RFC 4493, June 2006.\
+\
+   [AH]        Kent, S., "IP Authentication Header", RFC 4302, December\
+               2005.\
+\
+   [ESP]       Kent, S., "IP Encapsulating Security Payload (ESP)", RFC\
+               4303, December 2005.\
+\
+   [NIST-AES]  NIST, FIPS 197, "Advanced Encryption Standard (AES)",\
+               November 2001, http://csrc.nist.gov/publications/fips/\
+               fips197/fips-197.pdf.\
+\
+   [NIST-CMAC] NIST, Special Publication 800-38B Draft, "Recommendation\
+               for Block Cipher Modes of Operation: The CMAC Method for\
+               Authentication", March 9, 2005.\
+\
+10.2.  Informative References\
+\
+   [OMAC1a]    Tetsu Iwata and Kaoru Kurosawa, "OMAC: One-Key CBC MAC",\
+               Fast Software Encryption, FSE 2003, LNCS 2887, pp. 129-\
+               153, Springer-Verlag, 2003.\
+\
+   [OMAC1b]    Tetsu Iwata and Kaoru Kurosawa, "OMAC: One-Key CBC MAC",\
+               Submission to NIST, December 2002.  Available from\
+               http://csrc.nist.gov/CryptoToolkit/modes/proposedmodes/\
+               omac/omac-spec.pdf.\
+\
+   [RFC-HMAC]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed-\
+               Hashing for Message Authentication", RFC 2104, February\
+               1997.\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 6]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+   [ROADMAP]   Thayer, R., Doraswamy, N., and R. Glenn, "IP Security\
+               Document Roadmap", RFC 2411, November 1998.\
+\
+   [XCBCa]     John Black and Phillip Rogaway, "A Suggestion for\
+               Handling Arbitrary-Length Messages with the CBC MAC",\
+               NIST Second Modes of Operation Workshop, August 2001.\
+               Available from http://csrc.nist.gov/CryptoToolkit/modes/\
+               proposedmodes/xcbc-mac/xcbc-mac-spec.pdf.\
+\
+   [XCBCb]     John Black and Phillip Rogaway, "CBC MACs for Arbitrary-\
+               Length Messages: The Three-Key Constructions", Journal of\
+               Cryptology, Vol. 18, No. 2, pp. 111-132, Springer-Verlag,\
+               Spring 2005.\
+\
+Authors' Addresses\
+\
+   Junhyuk Song\
+   University of Washington\
+   Samsung Electronics\
+\
+   Phone: (206) 853-5843\
+   EMail: songlee@ee.washington.edu, junhyuk.song@samsung.com\
+\
+\
+   Jicheol Lee\
+   Samsung Electronics\
+\
+   Phone: +82-31-279-3605\
+   EMail: jicheol.lee@samsung.com\
+\
+\
+   Radha Poovendran\
+   Network Security Lab (NSL)\
+   Dept. of Electrical Engineering\
+   University of Washington\
+\
+   Phone: (206) 221-6512\
+   EMail: radha@ee.washington.edu\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 7]\
+\
+RFC 4494            The AES-CMAC Algorithm and IPsec           June 2006\
+\
+\
+Full Copyright Statement\
+\
+   Copyright (C) The Internet Society (2006).\
+\
+   This document is subject to the rights, licenses and restrictions\
+   contained in BCP 78, and except as set forth therein, the authors\
+   retain all their rights.\
+\
+   This document and the information contained herein are provided on an\
+   "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS\
+   OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET\
+   ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,\
+   INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE\
+   INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED\
+   WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.\
+\
+Intellectual Property\
+\
+   The IETF takes no position regarding the validity or scope of any\
+   Intellectual Property Rights or other rights that might be claimed to\
+   pertain to the implementation or use of the technology described in\
+   this document or the extent to which any license under such rights\
+   might or might not be available; nor does it represent that it has\
+   made any independent effort to identify any such rights.  Information\
+   on the procedures with respect to rights in RFC documents can be\
+   found in BCP 78 and BCP 79.\
+\
+   Copies of IPR disclosures made to the IETF Secretariat and any\
+   assurances of licenses to be made available, or the result of an\
+   attempt made to obtain a general license or permission for the use of\
+   such proprietary rights by implementers or users of this\
+   specification can be obtained from the IETF on-line IPR repository at\
+   http://www.ietf.org/ipr.\
+\
+   The IETF invites any interested party to bring to its attention any\
+   copyrights, patents or patent applications, or other proprietary\
+   rights that may cover technology that may be required to implement\
+   this standard.  Please address the information to the IETF at\
+   ietf-ipr@ietf.org.\
+\
+Acknowledgement\
+\
+   Funding for the RFC Editor function is provided by the IETF\
+   Administrative Support Activity (IASA).\
+\
+\
+\
+\
+\
+\
+\
+Song, et al.                Standards Track                     [Page 8]\
+\
+
+END
+checksum 00000000001190794466
+cfs entry for: _tz.inf
+number of fields 2
+  name titolo
+  number 0
+  index options DOCS_AND_FREQS_AND_POSITIONS
+  term vectors false
+  payloads false
+  norms true
+  doc values NONE
+  doc values gen -1
+  attributes 0
+  data dimensional count 0
+  index dimensional count 0
+  dimensional num bytes 0
+  vector number of dimensions 0
+  vector encoding FLOAT32
+  vector similarity EUCLIDEAN
+  soft-deletes false
+  name contenuto
+  number 1
+  index options DOCS_AND_FREQS_AND_POSITIONS
+  term vectors false
+  payloads false
+  norms true
+  doc values NONE
+  doc values gen -1
+  attributes 0
+  data dimensional count 0
+  index dimensional count 0
+  dimensional num bytes 0
+  vector number of dimensions 0
+  vector encoding FLOAT32
+  vector similarity EUCLIDEAN
+  soft-deletes false
+checksum 00000000001012915120
+cfs entry for: _tz.len
+field titolo
+  type NUMERIC
+  minvalue 1
+  pattern 0
+0
+T
+field contenuto
+  type NUMERIC
+  minvalue 93
+  pattern 0
+0
+T
+END
+checksum 00000000003526199671
+cfs entry for: _tz.pst
+field contenuto
+  term 0
+    doc 0
+      freq 3
+      pos 446
+      pos 989
+      pos 1008
+  term 0011
+    doc 0
+      freq 1
+      pos 1199
+  term 0093187
+    doc 0
+      freq 1
+      pos 1213
+  term 01
+    doc 0
+      freq 1
+      pos 1197
+  term 0491
+    doc 0
+      freq 1
+      pos 1209
+  term 05
+    doc 0
+      freq 1
+      pos 1207
+  term 070a16b4
+    doc 0
+      freq 1
+      pos 1027
+  term 09cf4f3c
+    doc 0
+      freq 1
+      pos 984
+  term 1
+    doc 0
+      freq 10
+      pos 69
+      pos 180
+      pos 191
+      pos 716
+      pos 841
+      pos 849
+      pos 920
+      pos 936
+      pos 1006
+      pos 1208
+  term 10
+    doc 0
+      freq 1
+      pos 1224
+  term 10.1
+    doc 0
+      freq 1
+      pos 1226
+  term 10.2
+    doc 0
+      freq 1
+      pos 1312
+  term 111
+    doc 0
+      freq 1
+      pos 1478
+  term 12
+    doc 0
+      freq 3
+      pos 874
+      pos 917
+      pos 932
+  term 128
+    doc 0
+      freq 6
+      pos 408
+      pos 415
+      pos 507
+      pos 523
+      pos 549
+      pos 892
+  term 129
+    doc 0
+      freq 1
+      pos 1334
+  term 132
+    doc 0
+      freq 1
+      pos 1479
+  term 153
+    doc 0
+      freq 1
+      pos 1335
+  term 16
+    doc 0
+      freq 2
+      pos 410
+      pos 1020
+  term 18
+    doc 0
+      freq 1
+      pos 1474
+  term 197
+    doc 0
+      freq 2
+      pos 1274
+      pos 1287
+  term 1997
+    doc 0
+      freq 1
+      pos 1383
+  term 1998
+    doc 0
+      freq 1
+      pos 1416
+  term 1a0a52ef
+    doc 0
+      freq 1
+      pos 1067
+  term 1ab899b3
+    doc 0
+      freq 1
+      pos 991
+  term 1e03ac9c
+    doc 0
+      freq 2
+      pos 1041
+      pos 1061
+  term 2
+    doc 0
+      freq 7
+      pos 343
+      pos 488
+      pos 866
+      pos 928
+      pos 1018
+      pos 1198
+      pos 1476
+  term 2001
+    doc 0
+      freq 2
+      pos 1280
+      pos 1441
+  term 2002
+    doc 0
+      freq 1
+      pos 1354
+  term 2003
+    doc 0
+      freq 2
+      pos 1330
+      pos 1338
+  term 2005
+    doc 0
+      freq 4
+      pos 1257
+      pos 1269
+      pos 1311
+      pos 1483
+  term 2006
+    doc 0
+      freq 11
+      pos 22
+      pos 92
+      pos 190
+      pos 498
+      pos 764
+      pos 957
+      pos 1152
+      pos 1247
+      pos 1400
+      pos 1550
+      pos 1559
+  term 206
+    doc 0
+      freq 2
+      pos 1494
+      pos 1528
+  term 2104
+    doc 0
+      freq 1
+      pos 1381
+  term 221
+    doc 0
+      freq 1
+      pos 1529
+  term 2411
+    doc 0
+      freq 1
+      pos 1414
+  term 279
+    doc 0
+      freq 1
+      pos 1509
+  term 2887
+    doc 0
+      freq 1
+      pos 1332
+  term 28aed2a6
+    doc 0
+      freq 1
+      pos 982
+  term 2b7e1516
+    doc 0
+      freq 1
+      pos 981
+  term 2e409f96
+    doc 0
+      freq 3
+      pos 1023
+      pos 1037
+      pos 1057
+  term 3
+    doc 0
+      freq 4
+      pos 552
+      pos 754
+      pos 1032
+      pos 1129
+  term 30c81c46
+    doc 0
+      freq 2
+      pos 1044
+      pos 1064
+  term 30ca3261
+    doc 0
+      freq 1
+      pos 1049
+  term 31
+    doc 0
+      freq 1
+      pos 1508
+  term 35713366
+    doc 0
+      freq 1
+      pos 996
+  term 3605
+    doc 0
+      freq 1
+      pos 1510
+  term 38b
+    doc 0
+      freq 1
+      pos 1295
+  term 3e42f047
+    doc 0
+      freq 1
+      pos 992
+  term 4
+    doc 0
+      freq 3
+      pos 765
+      pos 947
+      pos 1052
+  term 4.1
+    doc 0
+      freq 1
+      pos 898
+  term 40
+    doc 0
+      freq 1
+      pos 1034
+  term 4302
+    doc 0
+      freq 1
+      pos 1255
+  term 4303
+    doc 0
+      freq 1
+      pos 1267
+  term 4493
+    doc 0
+      freq 1
+      pos 1245
+  term 4494
+    doc 0
+      freq 8
+      pos 8
+      pos 182
+      pos 490
+      pos 756
+      pos 949
+      pos 1144
+      pos 1392
+      pos 1542
+  term 45af8e51
+    doc 0
+      freq 2
+      pos 1043
+      pos 1063
+  term 5
+    doc 0
+      freq 2
+      pos 958
+      pos 1142
+  term 51f0bebf
+    doc 0
+      freq 1
+      pos 1073
+  term 5843
+    doc 0
+      freq 1
+      pos 1496
+  term 6
+    doc 0
+      freq 2
+      pos 1076
+      pos 1390
+  term 64
+    doc 0
+      freq 2
+      pos 674
+      pos 1054
+  term 6512
+    doc 0
+      freq 1
+      pos 1530
+  term 6ae266cc
+    doc 0
+      freq 1
+      pos 1001
+  term 6b4d4144
+    doc 0
+      freq 1
+      pos 1028
+  term 6bc1bee2
+    doc 0
+      freq 3
+      pos 1022
+      pos 1036
+      pos 1056
+  term 7
+    doc 0
+      freq 2
+      pos 1105
+      pos 1540
+  term 7236a8de
+    doc 0
+      freq 1
+      pos 998
+  term 7393172a
+    doc 0
+      freq 3
+      pos 1025
+      pos 1039
+      pos 1059
+  term 78
+    doc 0
+      freq 2
+      pos 1573
+      pos 1746
+  term 79
+    doc 0
+      freq 1
+      pos 1749
+  term 7c85e08f
+    doc 0
+      freq 1
+      pos 997
+  term 7df76b0c
+    doc 0
+      freq 1
+      pos 990
+  term 7e3b9d92
+    doc 0
+      freq 1
+      pos 1074
+  term 7fa37d12
+    doc 0
+      freq 1
+      pos 1015
+  term 8
+    doc 0
+      freq 3
+      pos 1116
+      pos 1124
+      pos 1876
+  term 800
+    doc 0
+      freq 1
+      pos 1294
+  term 82
+    doc 0
+      freq 1
+      pos 1507
+  term 853
+    doc 0
+      freq 1
+      pos 1495
+  term 9
+    doc 0
+      freq 2
+      pos 1153
+      pos 1310
+  term 96
+    doc 0
+      freq 16
+      pos 26
+      pos 173
+      pos 330
+      pos 528
+      pos 543
+      pos 560
+      pos 768
+      pos 779
+      pos 785
+      pos 791
+      pos 803
+      pos 845
+      pos 889
+      pos 940
+      pos 977
+      pos 1099
+  term 9eb76fac
+    doc 0
+      freq 2
+      pos 1042
+      pos 1062
+  term a
+    doc 0
+      freq 16
+      pos 215
+      pos 223
+      pos 361
+      pos 365
+      pos 386
+      pos 471
+      pos 601
+      pos 611
+      pos 699
+      pos 710
+      pos 732
+      pos 787
+      pos 802
+      pos 1423
+      pos 1657
+      pos 1777
+  term a35ce411
+    doc 0
+      freq 2
+      pos 1045
+      pos 1065
+  term abf71588
+    doc 0
+      freq 1
+      pos 983
+  term about
+    doc 0
+      freq 1
+      pos 737
+  term abstract
+    doc 0
+      freq 1
+      pos 93
+  term accidental
+    doc 0
+      freq 2
+      pos 620
+      pos 640
+  term according
+    doc 0
+      freq 1
+      pos 668
+  term achieves
+    doc 0
+      freq 1
+      pos 684
+  term acknowledge
+    doc 0
+      freq 1
+      pos 1179
+  term acknowledgement
+    doc 0
+      freq 1
+      pos 1854
+  term acknowledgements
+    doc 0
+      freq 1
+      pos 1154
+  term activity
+    doc 0
+      freq 1
+      pos 1868
+  term ad2b417b
+    doc 0
+      freq 1
+      pos 1070
+  term address
+    doc 0
+      freq 1
+      pos 1844
+  term addresses
+    doc 0
+      freq 2
+      pos 284
+      pos 1485
+  term administrative
+    doc 0
+      freq 1
+      pos 1866
+  term advanced
+    doc 0
+      freq 4
+      pos 231
+      pos 403
+      pos 575
+      pos 1275
+  term ae2d8a57
+    doc 0
+      freq 2
+      pos 1040
+      pos 1060
+  term aes
+    doc 0
+      freq 50
+      pos 24
+      pos 171
+      pos 184
+      pos 235
+      pos 328
+      pos 414
+      pos 480
+      pos 492
+      pos 505
+      pos 512
+      pos 519
+      pos 526
+      pos 538
+      pos 553
+      pos 558
+      pos 563
+      pos 565
+      pos 571
+      pos 581
+      pos 592
+      pos 645
+      pos 682
+      pos 694
+      pos 704
+      pos 717
+      pos 726
+      pos 738
+      pos 743
+      pos 758
+      pos 766
+      pos 777
+      pos 783
+      pos 788
+      pos 831
+      pos 835
+      pos 843
+      pos 850
+      pos 887
+      pos 922
+      pos 938
+      pos 951
+      pos 1097
+      pos 1114
+      pos 1146
+      pos 1229
+      pos 1241
+      pos 1271
+      pos 1278
+      pos 1394
+      pos 1544
+  term aes_128
+    doc 0
+      freq 1
+      pos 987
+  term aes_cmac_96
+    doc 0
+      freq 4
+      pos 1012
+      pos 1026
+      pos 1046
+      pos 1072
+  term against
+    doc 0
+      freq 1
+      pos 679
+  term agencies
+    doc 0
+      freq 1
+      pos 1223
+  term ah
+    doc 0
+      freq 8
+      pos 164
+      pos 321
+      pos 335
+      pos 340
+      pos 530
+      pos 774
+      pos 816
+      pos 1248
+  term al
+    doc 0
+      freq 8
+      pos 176
+      pos 484
+      pos 750
+      pos 943
+      pos 1138
+      pos 1386
+      pos 1536
+      pos 1872
+  term algorithm
+    doc 0
+      freq 19
+      pos 27
+      pos 122
+      pos 168
+      pos 186
+      pos 325
+      pos 373
+      pos 494
+      pos 760
+      pos 846
+      pos 886
+      pos 937
+      pos 953
+      pos 1104
+      pos 1131
+      pos 1135
+      pos 1148
+      pos 1243
+      pos 1396
+      pos 1546
+  term algorithms
+    doc 0
+      freq 1
+      pos 569
+  term all
+    doc 0
+      freq 2
+      pos 1583
+      pos 1624
+  term alliance
+    doc 0
+      freq 1
+      pos 1189
+  term allocated
+    doc 0
+      freq 1
+      pos 1122
+  term an
+    doc 0
+      freq 8
+      pos 40
+      pos 255
+      pos 275
+      pos 394
+      pos 604
+      pos 614
+      pos 1596
+      pos 1772
+  term and
+    doc 0
+      freq 44
+      pos 28
+      pos 49
+      pos 52
+      pos 74
+      pos 99
+      pos 126
+      pos 160
+      pos 187
+      pos 198
+      pos 249
+      pos 268
+      pos 291
+      pos 318
+      pos 336
+      pos 341
+      pos 381
+      pos 495
+      pos 531
+      pos 582
+      pos 660
+      pos 745
+      pos 761
+      pos 775
+      pos 837
+      pos 880
+      pos 954
+      pos 1149
+      pos 1164
+      pos 1237
+      pos 1318
+      pos 1342
+      pos 1371
+      pos 1397
+      pos 1406
+      pos 1420
+      pos 1457
+      pos 1547
+      pos 1568
+      pos 1574
+      pos 1588
+      pos 1600
+      pos 1617
+      pos 1747
+      pos 1759
+  term ani
+    doc 0
+      freq 1
+      pos 1212
+  term any
+    doc 0
+      freq 13
+      pos 1101
+      pos 1218
+      pos 1613
+      pos 1634
+      pos 1646
+      pos 1649
+      pos 1673
+      pos 1703
+      pos 1722
+      pos 1727
+      pos 1760
+      pos 1813
+      pos 1821
+  term applications
+    doc 0
+      freq 1
+      pos 1826
+  term applied
+    doc 0
+      freq 1
+      pos 853
+  term appropriate
+    doc 0
+      freq 1
+      pos 720
+  term approved
+    doc 0
+      freq 1
+      pos 395
+  term arbitrary
+    doc 0
+      freq 2
+      pos 1427
+      pos 1463
+  term are
+    doc 0
+      freq 4
+      pos 573
+      pos 964
+      pos 1088
+      pos 1593
+  term army
+    doc 0
+      freq 2
+      pos 1193
+      pos 1203
+  term as
+    doc 0
+      freq 10
+      pos 229
+      pos 401
+      pos 637
+      pos 639
+      pos 714
+      pos 813
+      pos 967
+      pos 1083
+      pos 1576
+      pos 1597
+  term assurance
+    doc 0
+      freq 2
+      pos 596
+      pos 656
+  term assurances
+    doc 0
+      freq 1
+      pos 1761
+  term at
+    doc 0
+      freq 3
+      pos 672
+      pos 1806
+      pos 1850
+  term attacks
+    doc 0
+      freq 1
+      pos 681
+  term attempt
+    doc 0
+      freq 1
+      pos 1773
+  term attention
+    doc 0
+      freq 1
+      pos 1820
+  term august
+    doc 0
+      freq 1
+      pos 1440
+  term auth_aes_cmac_96
+    doc 0
+      freq 1
+      pos 1134
+  term authenticated
+    doc 0
+      freq 2
+      pos 426
+      pos 903
+  term authentication
+    doc 0
+      freq 13
+      pos 109
+      pos 151
+      pos 162
+      pos 208
+      pos 217
+      pos 309
+      pos 319
+      pos 355
+      pos 359
+      pos 772
+      pos 1252
+      pos 1308
+      pos 1379
+  term authenticator
+    doc 0
+      freq 1
+      pos 811
+  term authenticity
+    doc 0
+      freq 1
+      pos 661
+  term authority
+    doc 0
+      freq 1
+      pos 380
+  term authors
+    doc 0
+      freq 2
+      pos 1484
+      pos 1581
+  term available
+    doc 0
+      freq 6
+      pos 730
+      pos 741
+      pos 1355
+      pos 1442
+      pos 1713
+      pos 1767
+  term award
+    doc 0
+      freq 1
+      pos 1201
+  term b91b546f
+    doc 0
+      freq 1
+      pos 993
+  term based
+    doc 0
+      freq 9
+      pos 107
+      pos 206
+      pos 221
+      pos 390
+      pos 392
+      pos 517
+      pos 536
+      pos 697
+      pos 708
+  term basic
+    doc 0
+      freq 2
+      pos 279
+      pos 344
+  term basis
+    doc 0
+      freq 1
+      pos 1599
+  term bb1d6929
+    doc 0
+      freq 1
+      pos 1013
+  term bcp
+    doc 0
+      freq 3
+      pos 1572
+      pos 1745
+      pos 1748
+  term be
+    doc 0
+      freq 10
+      pos 425
+      pos 677
+      pos 781
+      pos 902
+      pos 1682
+      pos 1712
+      pos 1742
+      pos 1765
+      pos 1797
+      pos 1837
+  term bellare
+    doc 0
+      freq 1
+      pos 1369
+  term bit
+    doc 0
+      freq 9
+      pos 362
+      pos 409
+      pos 465
+      pos 524
+      pos 550
+      pos 792
+      pos 804
+      pos 893
+      pos 978
+  term bits
+    doc 0
+      freq 2
+      pos 546
+      pos 675
+  term black
+    doc 0
+      freq 3
+      pos 267
+      pos 1419
+      pos 1456
+  term block
+    doc 0
+      freq 11
+      pos 137
+      pos 226
+      pos 261
+      pos 348
+      pos 398
+      pos 417
+      pos 520
+      pos 579
+      pos 702
+      pos 869
+      pos 1299
+  term borrowed
+    doc 0
+      freq 1
+      pos 1160
+  term bring
+    doc 0
+      freq 1
+      pos 1817
+  term but
+    doc 0
+      freq 1
+      pos 1630
+  term by
+    doc 0
+      freq 10
+      pos 124
+      pos 247
+      pos 266
+      pos 369
+      pos 419
+      pos 428
+      pos 440
+      pos 1611
+      pos 1789
+      pos 1863
+  term c
+    doc 0
+      freq 2
+      pos 88
+      pos 1555
+  term can
+    doc 0
+      freq 3
+      pos 647
+      pos 1741
+      pos 1796
+  term canetti
+    doc 0
+      freq 1
+      pos 1373
+  term career
+    doc 0
+      freq 1
+      pos 1211
+  term case
+    doc 0
+      freq 4
+      pos 1005
+      pos 1017
+      pos 1031
+      pos 1051
+  term cases
+    doc 0
+      freq 1
+      pos 963
+  term category
+    doc 0
+      freq 1
+      pos 11
+  term cbc
+    doc 0
+      freq 9
+      pos 119
+      pos 243
+      pos 280
+      pos 289
+      pos 346
+      pos 1324
+      pos 1348
+      pos 1432
+      pos 1460
+  term chaining
+    doc 0
+      freq 3
+      pos 138
+      pos 262
+      pos 349
+  term checksum
+    doc 0
+      freq 2
+      pos 602
+      pos 612
+  term cipher
+    doc 0
+      freq 15
+      pos 106
+      pos 136
+      pos 205
+      pos 227
+      pos 260
+      pos 347
+      pos 389
+      pos 399
+      pos 416
+      pos 521
+      pos 578
+      pos 703
+      pos 1081
+      pos 1103
+      pos 1300
+  term claimed
+    doc 0
+      freq 1
+      pos 1683
+  term cmac
+    doc 0
+      freq 61
+      pos 25
+      pos 111
+      pos 147
+      pos 172
+      pos 185
+      pos 210
+      pos 211
+      pos 213
+      pos 236
+      pos 306
+      pos 329
+      pos 388
+      pos 481
+      pos 493
+      pos 506
+      pos 513
+      pos 514
+      pos 527
+      pos 539
+      pos 554
+      pos 559
+      pos 564
+      pos 566
+      pos 572
+      pos 586
+      pos 591
+      pos 593
+      pos 626
+      pos 646
+      pos 671
+      pos 683
+      pos 695
+      pos 718
+      pos 739
+      pos 744
+      pos 747
+      pos 759
+      pos 767
+      pos 778
+      pos 784
+      pos 789
+      pos 832
+      pos 836
+      pos 839
+      pos 844
+      pos 851
+      pos 888
+      pos 923
+      pos 939
+      pos 952
+      pos 972
+      pos 1098
+      pos 1115
+      pos 1147
+      pos 1163
+      pos 1230
+      pos 1242
+      pos 1290
+      pos 1305
+      pos 1395
+      pos 1545
+  term code
+    doc 0
+      freq 7
+      pos 110
+      pos 209
+      pos 218
+      pos 356
+      pos 360
+      pos 607
+      pos 617
+  term collaborative
+    doc 0
+      freq 1
+      pos 1187
+  term comments
+    doc 0
+      freq 2
+      pos 7
+      pos 1177
+  term community
+    doc 0
+      freq 1
+      pos 48
+  term computed
+    doc 0
+      freq 1
+      pos 368
+  term considerations
+    doc 0
+      freq 3
+      pos 1107
+      pos 1111
+      pos 1118
+  term constructions
+    doc 0
+      freq 1
+      pos 1469
+  term contained
+    doc 0
+      freq 2
+      pos 1570
+      pos 1591
+  term contributor
+    doc 0
+      freq 1
+      pos 1602
+  term copies
+    doc 0
+      freq 1
+      pos 1750
+  term copyright
+    doc 0
+      freq 4
+      pos 85
+      pos 87
+      pos 1552
+      pos 1554
+  term copyrights
+    doc 0
+      freq 1
+      pos 1822
+  term core
+    doc 0
+      freq 1
+      pos 556
+  term cover
+    doc 0
+      freq 1
+      pos 1833
+  term cryptology
+    doc 0
+      freq 1
+      pos 1472
+  term cryptotoolkit
+    doc 0
+      freq 2
+      pos 1359
+      pos 1446
+  term csrc.nist.gov
+    doc 0
+      freq 3
+      pos 1282
+      pos 1358
+      pos 1445
+  term cta
+    doc 0
+      freq 1
+      pos 1190
+  term current
+    doc 0
+      freq 1
+      pos 60
+  term daad19
+    doc 0
+      freq 1
+      pos 1196
+  term data
+    doc 0
+      freq 3
+      pos 598
+      pos 624
+      pos 636
+  term de9ae630
+    doc 0
+      freq 1
+      pos 1048
+  term december
+    doc 0
+      freq 3
+      pos 1256
+      pos 1268
+      pos 1353
+  term default
+    doc 0
+      freq 1
+      pos 810
+  term deficiencies
+    doc 0
+      freq 1
+      pos 287
+  term defined
+    doc 0
+      freq 2
+      pos 585
+      pos 969
+  term definitions
+    doc 0
+      freq 1
+      pos 345
+  term denoted
+    doc 0
+      freq 3
+      pos 418
+      pos 427
+      pos 439
+  term dept
+    doc 0
+      freq 1
+      pos 1520
+  term described
+    doc 0
+      freq 2
+      pos 895
+      pos 1694
+  term describes
+    doc 0
+      freq 1
+      pos 842
+  term designed
+    doc 0
+      freq 1
+      pos 628
+  term detailed
+    doc 0
+      freq 1
+      pos 735
+  term detect
+    doc 0
+      freq 1
+      pos 630
+  term detecting
+    doc 0
+      freq 2
+      pos 606
+      pos 616
+  term detects
+    doc 0
+      freq 1
+      pos 618
+  term df4f9b17
+    doc 0
+      freq 1
+      pos 1069
+  term dfa66747
+    doc 0
+      freq 1
+      pos 1047
+  term disclaim
+    doc 0
+      freq 1
+      pos 1623
+  term disclosures
+    doc 0
+      freq 1
+      pos 1753
+  term discussion
+    doc 0
+      freq 1
+      pos 51
+  term distribution
+    doc 0
+      freq 1
+      pos 79
+  term do
+    doc 0
+      freq 1
+      pos 1215
+  term document
+    doc 0
+      freq 6
+      pos 38
+      pos 455
+      pos 1411
+      pos 1561
+      pos 1587
+      pos 1697
+  term documents
+    doc 0
+      freq 1
+      pos 1740
+  term does
+    doc 0
+      freq 1
+      pos 1715
+  term doraswamy
+    doc 0
+      freq 1
+      pos 1404
+  term draft
+    doc 0
+      freq 1
+      pos 1296
+  term e46d513b
+    doc 0
+      freq 1
+      pos 1003
+  term e5fbc119
+    doc 0
+      freq 1
+      pos 1066
+  term e66c3710
+    doc 0
+      freq 1
+      pos 1071
+  term e93d7e11
+    doc 0
+      freq 3
+      pos 1024
+      pos 1038
+      pos 1058
+  term e9593728
+    doc 0
+      freq 1
+      pos 1014
+  term edition
+    doc 0
+      freq 1
+      pos 61
+  term editor
+    doc 0
+      freq 1
+      pos 1859
+  term ee.washington.edu
+    doc 0
+      freq 2
+      pos 1499
+      pos 1533
+  term efficiently
+    doc 0
+      freq 3
+      pos 129
+      pos 283
+      pos 293
+  term effort
+    doc 0
+      freq 1
+      pos 1724
+  term electrical
+    doc 0
+      freq 1
+      pos 1522
+  term electronics
+    doc 0
+      freq 3
+      pos 20
+      pos 1492
+      pos 1505
+  term email
+    doc 0
+      freq 3
+      pos 1497
+      pos 1511
+      pos 1531
+  term empty
+    doc 0
+      freq 1
+      pos 1010
+  term encapsulating
+    doc 0
+      freq 3
+      pos 156
+      pos 314
+      pos 1262
+  term encryption
+    doc 0
+      freq 5
+      pos 232
+      pos 404
+      pos 576
+      pos 1276
+      pos 1328
+  term engineering
+    doc 0
+      freq 2
+      pos 1523
+      pos 1620
+  term equivalent
+    doc 0
+      freq 2
+      pos 114
+      pos 238
+  term error
+    doc 0
+      freq 2
+      pos 605
+      pos 615
+  term esp
+    doc 0
+      freq 8
+      pos 159
+      pos 317
+      pos 337
+      pos 532
+      pos 776
+      pos 1080
+      pos 1258
+      pos 1265
+  term establish
+    doc 0
+      freq 1
+      pos 378
+  term et
+    doc 0
+      freq 8
+      pos 175
+      pos 483
+      pos 749
+      pos 942
+      pos 1137
+      pos 1385
+      pos 1535
+      pos 1871
+  term except
+    doc 0
+      freq 1
+      pos 1575
+  term exception
+    doc 0
+      freq 1
+      pos 975
+  term express
+    doc 0
+      freq 1
+      pos 1626
+  term extended
+    doc 0
+      freq 2
+      pos 135
+      pos 259
+  term extent
+    doc 0
+      freq 1
+      pos 1700
+  term f69f2445
+    doc 0
+      freq 1
+      pos 1068
+  term f79bdd9d
+    doc 0
+      freq 1
+      pos 1029
+  term f7ddac30
+    doc 0
+      freq 1
+      pos 1000
+  term f90bc11e
+    doc 0
+      freq 1
+      pos 1002
+  term fast
+    doc 0
+      freq 1
+      pos 1326
+  term fbeed618
+    doc 0
+      freq 1
+      pos 995
+  term fc497417
+    doc 0
+      freq 1
+      pos 1075
+  term february
+    doc 0
+      freq 1
+      pos 1382
+  term figure
+    doc 0
+      freq 2
+      pos 840
+      pos 935
+  term fips
+    doc 0
+      freq 3
+      pos 1273
+      pos 1284
+      pos 1286
+  term fips197
+    doc 0
+      freq 1
+      pos 1285
+  term first
+    doc 0
+      freq 6
+      pos 466
+      pos 468
+      pos 510
+      pos 797
+      pos 825
+      pos 878
+  term fitness
+    doc 0
+      freq 1
+      pos 1655
+  term fixed
+    doc 0
+      freq 1
+      pos 366
+  term following
+    doc 0
+      freq 1
+      pos 1185
+  term for
+    doc 0
+      freq 21
+      pos 6
+      pos 45
+      pos 54
+      pos 70
+      pos 331
+      pos 353
+      pos 413
+      pos 570
+      pos 721
+      pos 769
+      pos 827
+      pos 1125
+      pos 1174
+      pos 1298
+      pos 1307
+      pos 1377
+      pos 1425
+      pos 1462
+      pos 1656
+      pos 1782
+      pos 1856
+  term force
+    doc 0
+      freq 1
+      pos 1622
+  term forth
+    doc 0
+      freq 1
+      pos 1578
+  term found
+    doc 0
+      freq 1
+      pos 1743
+  term from
+    doc 0
+      freq 8
+      pos 665
+      pos 1161
+      pos 1182
+      pos 1191
+      pos 1202
+      pos 1356
+      pos 1443
+      pos 1799
+  term fse
+    doc 0
+      freq 1
+      pos 1329
+  term full
+    doc 0
+      freq 1
+      pos 1551
+  term function
+    doc 0
+      freq 5
+      pos 516
+      pos 535
+      pos 712
+      pos 734
+      pos 1860
+  term funding
+    doc 0
+      freq 2
+      pos 1222
+      pos 1855
+  term further
+    doc 0
+      freq 2
+      pos 332
+      pos 828
+  term general
+    doc 0
+      freq 1
+      pos 1778
+  term generation
+    doc 0
+      freq 4
+      pos 372
+      pos 515
+      pos 534
+      pos 986
+  term glenn
+    doc 0
+      freq 1
+      pos 1408
+  term goal
+    doc 0
+      freq 1
+      pos 688
+  term grants
+    doc 0
+      freq 1
+      pos 1186
+  term group
+    doc 0
+      freq 1
+      pos 2
+  term guessing
+    doc 0
+      freq 1
+      pos 680
+  term h
+    doc 0
+      freq 1
+      pos 1368
+  term handling
+    doc 0
+      freq 1
+      pos 1426
+  term has
+    doc 0
+      freq 4
+      pos 102
+      pos 201
+      pos 1121
+      pos 1720
+  term hash
+    doc 0
+      freq 2
+      pos 711
+      pos 733
+  term hashing
+    doc 0
+      freq 1
+      pos 1376
+  term he
+    doc 0
+      freq 1
+      pos 1605
+  term header
+    doc 0
+      freq 3
+      pos 163
+      pos 320
+      pos 1253
+  term hence
+    doc 0
+      freq 1
+      pos 382
+  term herein
+    doc 0
+      freq 2
+      pos 1592
+      pos 1642
+  term his
+    doc 0
+      freq 1
+      pos 1175
+  term hmac
+    doc 0
+      freq 5
+      pos 690
+      pos 692
+      pos 706
+      pos 1366
+      pos 1374
+  term housley
+    doc 0
+      freq 1
+      pos 1173
+  term http
+    doc 0
+      freq 4
+      pos 1281
+      pos 1357
+      pos 1444
+      pos 1807
+  term iana
+    doc 0
+      freq 2
+      pos 1117
+      pos 1120
+  term iasa
+    doc 0
+      freq 1
+      pos 1869
+  term identify
+    doc 0
+      freq 1
+      pos 1726
+  term ietf
+    doc 0
+      freq 7
+      pos 1663
+      pos 1757
+      pos 1801
+      pos 1811
+      pos 1849
+      pos 1851
+      pos 1865
+  term ietf.org
+    doc 0
+      freq 1
+      pos 1853
+  term if
+    doc 0
+      freq 1
+      pos 1612
+  term ikev2
+    doc 0
+      freq 1
+      pos 1126
+  term implement
+    doc 0
+      freq 1
+      pos 1840
+  term implementation
+    doc 0
+      freq 1
+      pos 1688
+  term implementers
+    doc 0
+      freq 1
+      pos 1790
+  term implied
+    doc 0
+      freq 2
+      pos 1628
+      pos 1650
+  term improvement
+    doc 0
+      freq 2
+      pos 256
+      pos 276
+  term improvements
+    doc 0
+      freq 1
+      pos 55
+  term including
+    doc 0
+      freq 1
+      pos 1629
+  term independent
+    doc 0
+      freq 1
+      pos 1723
+  term information
+    doc 0
+      freq 8
+      pos 333
+      pos 722
+      pos 736
+      pos 829
+      pos 1590
+      pos 1641
+      pos 1730
+      pos 1846
+  term informative
+    doc 0
+      freq 1
+      pos 1313
+  term infringe
+    doc 0
+      freq 1
+      pos 1645
+  term input
+    doc 0
+      freq 2
+      pos 650
+      pos 890
+  term institute
+    doc 0
+      freq 2
+      pos 96
+      pos 195
+  term integrity
+    doc 0
+      freq 4
+      pos 384
+      pos 599
+      pos 659
+      pos 1130
+  term intellectual
+    doc 0
+      freq 2
+      pos 1660
+      pos 1674
+  term intentional
+    doc 0
+      freq 1
+      pos 631
+  term interaction
+    doc 0
+      freq 1
+      pos 1077
+  term interested
+    doc 0
+      freq 1
+      pos 1814
+  term internet
+    doc 0
+      freq 7
+      pos 41
+      pos 47
+      pos 64
+      pos 90
+      pos 1557
+      pos 1615
+      pos 1619
+  term introduction
+    doc 0
+      freq 1
+      pos 192
+  term invites
+    doc 0
+      freq 1
+      pos 1812
+  term ip
+    doc 0
+      freq 3
+      pos 1251
+      pos 1261
+      pos 1409
+  term ipr
+    doc 0
+      freq 4
+      pos 1752
+      pos 1804
+      pos 1809
+      pos 1852
+  term ipsec
+    doc 0
+      freq 12
+      pos 32
+      pos 155
+      pos 188
+      pos 313
+      pos 496
+      pos 529
+      pos 762
+      pos 770
+      pos 955
+      pos 1150
+      pos 1398
+      pos 1548
+  term is
+    doc 0
+      freq 29
+      pos 83
+      pos 113
+      pos 169
+      pos 214
+      pos 220
+      pos 237
+      pos 254
+      pos 274
+      pos 326
+      pos 375
+      pos 445
+      pos 450
+      pos 561
+      pos 627
+      pos 696
+      pos 707
+      pos 719
+      pos 727
+      pos 740
+      pos 786
+      pos 801
+      pos 821
+      pos 852
+      pos 871
+      pos 884
+      pos 1562
+      pos 1598
+      pos 1609
+      pos 1861
+  term issues
+    doc 0
+      freq 1
+      pos 1091
+  term it
+    doc 0
+      freq 2
+      pos 1716
+      pos 1719
+  term its
+    doc 0
+      freq 2
+      pos 29
+      pos 1819
+  term itself
+    doc 0
+      freq 1
+      pos 273
+  term iwata
+    doc 0
+      freq 5
+      pos 125
+      pos 248
+      pos 1239
+      pos 1317
+      pos 1341
+  term j
+    doc 0
+      freq 2
+      pos 17
+      pos 1236
+  term jh
+    doc 0
+      freq 2
+      pos 3
+      pos 1232
+  term jicheol
+    doc 0
+      freq 1
+      pos 1502
+  term jicheol.lee
+    doc 0
+      freq 1
+      pos 1512
+  term john
+    doc 0
+      freq 2
+      pos 1418
+      pos 1455
+  term journal
+    doc 0
+      freq 1
+      pos 1470
+  term june
+    doc 0
+      freq 9
+      pos 21
+      pos 189
+      pos 497
+      pos 763
+      pos 956
+      pos 1151
+      pos 1246
+      pos 1399
+      pos 1549
+  term junhyuk
+    doc 0
+      freq 1
+      pos 1486
+  term junhyuk.song
+    doc 0
+      freq 1
+      pos 1500
+  term k
+    doc 0
+      freq 6
+      pos 407
+      pos 420
+      pos 863
+      pos 891
+      pos 924
+      pos 980
+  term k1
+    doc 0
+      freq 1
+      pos 994
+  term k2
+    doc 0
+      freq 1
+      pos 999
+  term kaoru
+    doc 0
+      freq 2
+      pos 1319
+      pos 1343
+  term kent
+    doc 0
+      freq 2
+      pos 1249
+      pos 1259
+  term key
+    doc 0
+      freq 16
+      pos 118
+      pos 132
+      pos 225
+      pos 242
+      pos 296
+      pos 397
+      pos 406
+      pos 412
+      pos 525
+      pos 701
+      pos 862
+      pos 894
+      pos 988
+      pos 1323
+      pos 1347
+      pos 1468
+  term keyed
+    doc 0
+      freq 1
+      pos 1375
+  term known
+    doc 0
+      freq 1
+      pos 1090
+  term krawczyk
+    doc 0
+      freq 1
+      pos 1367
+  term kurosawa
+    doc 0
+      freq 4
+      pos 127
+      pos 250
+      pos 1320
+      pos 1344
+  term l
+    doc 0
+      freq 2
+      pos 458
+      pos 474
+  term lab
+    doc 0
+      freq 1
+      pos 1518
+  term laboratory
+    doc 0
+      freq 1
+      pos 1195
+  term least
+    doc 0
+      freq 1
+      pos 673
+  term lee
+    doc 0
+      freq 3
+      pos 18
+      pos 1235
+      pos 1503
+  term len
+    doc 0
+      freq 9
+      pos 431
+      pos 441
+      pos 860
+      pos 904
+      pos 926
+      pos 1007
+      pos 1019
+      pos 1033
+      pos 1053
+  term length
+    doc 0
+      freq 10
+      pos 367
+      pos 430
+      pos 433
+      pos 472
+      pos 812
+      pos 859
+      pos 905
+      pos 916
+      pos 1428
+      pos 1464
+  term license
+    doc 0
+      freq 2
+      pos 1704
+      pos 1779
+  term licenses
+    doc 0
+      freq 2
+      pos 1567
+      pos 1763
+  term like
+    doc 0
+      freq 1
+      pos 1168
+  term limited
+    doc 0
+      freq 1
+      pos 1632
+  term line
+    doc 0
+      freq 1
+      pos 1803
+  term lncs
+    doc 0
+      freq 1
+      pos 1331
+  term m
+    doc 0
+      freq 11
+      pos 422
+      pos 429
+      pos 436
+      pos 857
+      pos 899
+      pos 925
+      pos 1009
+      pos 1021
+      pos 1035
+      pos 1055
+      pos 1370
+  term mac
+    doc 0
+      freq 13
+      pos 281
+      pos 290
+      pos 357
+      pos 371
+      pos 391
+      pos 461
+      pos 533
+      pos 805
+      pos 1325
+      pos 1349
+      pos 1433
+      pos 1450
+      pos 1452
+  term mac1
+    doc 0
+      freq 2
+      pos 120
+      pos 244
+  term macs
+    doc 0
+      freq 1
+      pos 1461
+  term made
+    doc 0
+      freq 4
+      pos 1721
+      pos 1754
+      pos 1766
+      pos 1774
+  term march
+    doc 0
+      freq 1
+      pos 1309
+  term maximum
+    doc 0
+      freq 1
+      pos 448
+  term may
+    doc 0
+      freq 2
+      pos 1832
+      pos 1836
+  term mechanism
+    doc 0
+      freq 3
+      pos 152
+      pos 310
+      pos 1082
+  term meet
+    doc 0
+      freq 1
+      pos 808
+  term memo
+    doc 0
+      freq 4
+      pos 36
+      pos 82
+      pos 142
+      pos 301
+  term merchantability
+    doc 0
+      freq 1
+      pos 1653
+  term message
+    doc 0
+      freq 17
+      pos 108
+      pos 207
+      pos 216
+      pos 354
+      pos 358
+      pos 387
+      pos 421
+      pos 423
+      pos 435
+      pos 651
+      pos 654
+      pos 664
+      pos 771
+      pos 856
+      pos 900
+      pos 907
+      pos 1378
+  term messages
+    doc 0
+      freq 2
+      pos 1429
+      pos 1465
+  term method
+    doc 0
+      freq 1
+      pos 1306
+  term might
+    doc 0
+      freq 3
+      pos 1681
+      pos 1708
+      pos 1710
+  term minimum
+    doc 0
+      freq 1
+      pos 443
+  term mode
+    doc 0
+      freq 5
+      pos 139
+      pos 148
+      pos 263
+      pos 350
+      pos 587
+  term modes
+    doc 0
+      freq 4
+      pos 1301
+      pos 1360
+      pos 1436
+      pos 1447
+  term modifications
+    doc 0
+      freq 3
+      pos 621
+      pos 633
+      pos 641
+  term more
+    doc 0
+      freq 1
+      pos 728
+  term most
+    doc 0
+      freq 2
+      pos 463
+      pos 544
+  term msb
+    doc 0
+      freq 5
+      pos 467
+      pos 509
+      pos 796
+      pos 824
+      pos 877
+  term n
+    doc 0
+      freq 1
+      pos 1405
+  term named
+    doc 0
+      freq 2
+      pos 170
+      pos 327
+  term national
+    doc 0
+      freq 2
+      pos 95
+      pos 194
+  term network
+    doc 0
+      freq 2
+      pos 0
+      pos 1516
+  term new
+    doc 0
+      freq 2
+      pos 167
+      pos 324
+  term nist
+    doc 0
+      freq 17
+      pos 101
+      pos 200
+      pos 212
+      pos 234
+      pos 580
+      pos 590
+      pos 670
+      pos 746
+      pos 838
+      pos 971
+      pos 1162
+      pos 1270
+      pos 1272
+      pos 1289
+      pos 1291
+      pos 1352
+      pos 1434
+  term no
+    doc 0
+      freq 3
+      pos 1089
+      pos 1475
+      pos 1665
+  term nor
+    doc 0
+      freq 1
+      pos 1714
+  term normative
+    doc 0
+      freq 1
+      pos 1227
+  term not
+    doc 0
+      freq 5
+      pos 451
+      pos 1216
+      pos 1631
+      pos 1644
+      pos 1711
+  term notice
+    doc 0
+      freq 1
+      pos 86
+  term november
+    doc 0
+      freq 2
+      pos 1279
+      pos 1415
+  term nsf
+    doc 0
+      freq 1
+      pos 1210
+  term nsl
+    doc 0
+      freq 1
+      pos 1519
+  term obtain
+    doc 0
+      freq 1
+      pos 1776
+  term obtained
+    doc 0
+      freq 1
+      pos 1798
+  term octet
+    doc 0
+      freq 1
+      pos 411
+  term octets
+    doc 0
+      freq 5
+      pos 438
+      pos 475
+      pos 875
+      pos 909
+      pos 918
+  term of
+    doc 0
+      freq 56
+      pos 15
+      pos 34
+      pos 62
+      pos 76
+      pos 80
+      pos 97
+      pos 134
+      pos 146
+      pos 153
+      pos 196
+      pos 257
+      pos 277
+      pos 288
+      pos 298
+      pos 305
+      pos 311
+      pos 351
+      pos 364
+      pos 385
+      pos 434
+      pos 473
+      pos 479
+      pos 504
+      pos 547
+      pos 557
+      pos 588
+      pos 597
+      pos 610
+      pos 622
+      pos 634
+      pos 644
+      pos 657
+      pos 689
+      pos 819
+      pos 906
+      pos 976
+      pos 1084
+      pos 1096
+      pos 1113
+      pos 1156
+      pos 1220
+      pos 1302
+      pos 1437
+      pos 1471
+      pos 1489
+      pos 1521
+      pos 1525
+      pos 1639
+      pos 1652
+      pos 1672
+      pos 1691
+      pos 1751
+      pos 1762
+      pos 1771
+      pos 1785
+      pos 1793
+  term office
+    doc 0
+      freq 1
+      pos 1205
+  term official
+    doc 0
+      freq 1
+      pos 65
+  term omac
+    doc 0
+      freq 4
+      pos 1321
+      pos 1345
+      pos 1362
+      pos 1363
+  term omac1
+    doc 0
+      freq 5
+      pos 121
+      pos 128
+      pos 245
+      pos 253
+      pos 292
+  term omac1a
+    doc 0
+      freq 2
+      pos 251
+      pos 1315
+  term omac1b
+    doc 0
+      freq 2
+      pos 252
+      pos 1339
+  term one
+    doc 0
+      freq 4
+      pos 117
+      pos 241
+      pos 1322
+      pos 1346
+  term only
+    doc 0
+      freq 1
+      pos 619
+  term operation
+    doc 0
+      freq 4
+      pos 352
+      pos 589
+      pos 1303
+      pos 1438
+  term or
+    doc 0
+      freq 16
+      pos 603
+      pos 613
+      pos 1608
+      pos 1627
+      pos 1648
+      pos 1654
+      pos 1670
+      pos 1677
+      pos 1689
+      pos 1698
+      pos 1709
+      pos 1768
+      pos 1780
+      pos 1791
+      pos 1824
+      pos 1827
+  term order
+    doc 0
+      freq 5
+      pos 469
+      pos 511
+      pos 798
+      pos 826
+      pos 879
+  term organization
+    doc 0
+      freq 1
+      pos 1604
+  term other
+    doc 0
+      freq 2
+      pos 1678
+      pos 1828
+  term output
+    doc 0
+      freq 9
+      pos 478
+      pos 503
+      pos 551
+      pos 643
+      pos 794
+      pos 800
+      pos 868
+      pos 910
+      pos 914
+  term over
+    doc 0
+      freq 1
+      pos 662
+  term page
+    doc 0
+      freq 8
+      pos 179
+      pos 487
+      pos 753
+      pos 946
+      pos 1141
+      pos 1389
+      pos 1539
+      pos 1875
+  term particular
+    doc 0
+      freq 1
+      pos 1658
+  term party
+    doc 0
+      freq 1
+      pos 1815
+  term patent
+    doc 0
+      freq 1
+      pos 1825
+  term patents
+    doc 0
+      freq 1
+      pos 1823
+  term payload
+    doc 0
+      freq 3
+      pos 158
+      pos 316
+      pos 1264
+  term pdf
+    doc 0
+      freq 1
+      pos 1288
+  term permission
+    doc 0
+      freq 1
+      pos 1781
+  term pertain
+    doc 0
+      freq 1
+      pos 1685
+  term phillip
+    doc 0
+      freq 2
+      pos 1421
+      pos 1458
+  term phone
+    doc 0
+      freq 3
+      pos 1493
+      pos 1506
+      pos 1527
+  term please
+    doc 0
+      freq 2
+      pos 56
+      pos 1843
+  term poovendran
+    doc 0
+      freq 3
+      pos 10
+      pos 1233
+      pos 1515
+  term portions
+    doc 0
+      freq 1
+      pos 1155
+  term position
+    doc 0
+      freq 2
+      pos 1219
+      pos 1666
+  term pp
+    doc 0
+      freq 2
+      pos 1333
+      pos 1477
+  term preclude
+    doc 0
+      freq 1
+      pos 1093
+  term presidential
+    doc 0
+      freq 1
+      pos 1200
+  term procedures
+    doc 0
+      freq 1
+      pos 1733
+  term property
+    doc 0
+      freq 2
+      pos 1661
+      pos 1675
+  term proposedmodes
+    doc 0
+      freq 2
+      pos 1361
+      pos 1448
+  term proprietary
+    doc 0
+      freq 2
+      pos 1787
+      pos 1829
+  term protocol
+    doc 0
+      freq 3
+      pos 44
+      pos 66
+      pos 78
+  term protocols
+    doc 0
+      freq 2
+      pos 165
+      pos 322
+  term provided
+    doc 0
+      freq 2
+      pos 1594
+      pos 1862
+  term provides
+    doc 0
+      freq 2
+      pos 594
+      pos 655
+  term publication
+    doc 0
+      freq 1
+      pos 1293
+  term publications
+    doc 0
+      freq 1
+      pos 1283
+  term purpose
+    doc 0
+      freq 1
+      pos 1659
+  term r
+    doc 0
+      freq 5
+      pos 9
+      pos 1234
+      pos 1372
+      pos 1403
+      pos 1407
+  term radha
+    doc 0
+      freq 2
+      pos 1514
+      pos 1532
+  term readily
+    doc 0
+      freq 1
+      pos 729
+  term recently
+    doc 0
+      freq 3
+      pos 103
+      pos 202
+      pos 584
+  term recommendation
+    doc 0
+      freq 1
+      pos 1297
+  term reduces
+    doc 0
+      freq 2
+      pos 130
+      pos 294
+  term refer
+    doc 0
+      freq 3
+      pos 57
+      pos 338
+      pos 833
+  term references
+    doc 0
+      freq 3
+      pos 1225
+      pos 1228
+      pos 1314
+  term reflect
+    doc 0
+      freq 1
+      pos 1217
+  term regarding
+    doc 0
+      freq 1
+      pos 1667
+  term repository
+    doc 0
+      freq 1
+      pos 1805
+  term represent
+    doc 0
+      freq 1
+      pos 1717
+  term represents
+    doc 0
+      freq 1
+      pos 1607
+  term request
+    doc 0
+      freq 1
+      pos 5
+  term requests
+    doc 0
+      freq 1
+      pos 50
+  term required
+    doc 0
+      freq 1
+      pos 1838
+  term research
+    doc 0
+      freq 2
+      pos 1194
+      pos 1204
+  term respect
+    doc 0
+      freq 1
+      pos 1735
+  term restrictions
+    doc 0
+      freq 1
+      pos 1569
+  term result
+    doc 0
+      freq 2
+      pos 818
+      pos 1770
+  term results
+    doc 0
+      freq 1
+      pos 1214
+  term retain
+    doc 0
+      freq 1
+      pos 1582
+  term return
+    doc 0
+      freq 1
+      pos 933
+  term returned
+    doc 0
+      freq 1
+      pos 885
+  term rfc
+    doc 0
+      freq 16
+      pos 181
+      pos 489
+      pos 691
+      pos 755
+      pos 948
+      pos 1143
+      pos 1244
+      pos 1254
+      pos 1266
+      pos 1365
+      pos 1380
+      pos 1391
+      pos 1413
+      pos 1541
+      pos 1739
+      pos 1858
+  term rights
+    doc 0
+      freq 10
+      pos 1566
+      pos 1585
+      pos 1647
+      pos 1676
+      pos 1679
+      pos 1707
+      pos 1729
+      pos 1737
+      pos 1788
+      pos 1830
+  term roadmap
+    doc 0
+      freq 3
+      pos 342
+      pos 1401
+      pos 1412
+  term rogaway
+    doc 0
+      freq 3
+      pos 269
+      pos 1422
+      pos 1459
+  term russ
+    doc 0
+      freq 1
+      pos 1172
+  term s
+    doc 0
+      freq 2
+      pos 1250
+      pos 1260
+  term same
+    doc 0
+      freq 1
+      pos 966
+  term samsung
+    doc 0
+      freq 3
+      pos 19
+      pos 1491
+      pos 1504
+  term samsung.com
+    doc 0
+      freq 2
+      pos 1501
+      pos 1513
+  term scope
+    doc 0
+      freq 1
+      pos 1671
+  term second
+    doc 0
+      freq 1
+      pos 1435
+  term secretariat
+    doc 0
+      freq 1
+      pos 1758
+  term section
+    doc 0
+      freq 2
+      pos 897
+      pos 1112
+  term security
+    doc 0
+      freq 9
+      pos 157
+      pos 286
+      pos 315
+      pos 687
+      pos 1106
+      pos 1110
+      pos 1263
+      pos 1410
+      pos 1517
+  term see
+    doc 0
+      freq 1
+      pos 1108
+  term set
+    doc 0
+      freq 1
+      pos 1577
+  term sha
+    doc 0
+      freq 1
+      pos 715
+  term she
+    doc 0
+      freq 1
+      pos 1606
+  term should
+    doc 0
+      freq 2
+      pos 676
+      pos 780
+  term significant
+    doc 0
+      freq 2
+      pos 464
+      pos 545
+  term similar
+    doc 0
+      freq 1
+      pos 686
+  term since
+    doc 0
+      freq 1
+      pos 693
+  term size
+    doc 0
+      freq 2
+      pos 133
+      pos 297
+  term society
+    doc 0
+      freq 3
+      pos 91
+      pos 1558
+      pos 1616
+  term software
+    doc 0
+      freq 1
+      pos 1327
+  term song
+    doc 0
+      freq 11
+      pos 4
+      pos 174
+      pos 482
+      pos 748
+      pos 941
+      pos 1136
+      pos 1231
+      pos 1384
+      pos 1487
+      pos 1534
+      pos 1870
+  term songlee
+    doc 0
+      freq 1
+      pos 1498
+  term source
+    doc 0
+      freq 1
+      pos 667
+  term spec.pdf
+    doc 0
+      freq 2
+      pos 1364
+      pos 1453
+  term special
+    doc 0
+      freq 1
+      pos 1292
+  term specific
+    doc 0
+      freq 1
+      pos 1102
+  term specification
+    doc 0
+      freq 1
+      pos 1795
+  term specified
+    doc 0
+      freq 4
+      pos 104
+      pos 203
+      pos 452
+      pos 814
+  term specifies
+    doc 0
+      freq 3
+      pos 39
+      pos 143
+      pos 302
+  term sponsored
+    doc 0
+      freq 1
+      pos 1610
+  term spring
+    doc 0
+      freq 1
+      pos 1482
+  term springer
+    doc 0
+      freq 2
+      pos 1336
+      pos 1480
+  term standard
+    doc 0
+      freq 5
+      pos 233
+      pos 405
+      pos 577
+      pos 1277
+      pos 1842
+  term standardization
+    doc 0
+      freq 1
+      pos 72
+  term standards
+    doc 0
+      freq 13
+      pos 12
+      pos 42
+      pos 67
+      pos 98
+      pos 177
+      pos 197
+      pos 485
+      pos 751
+      pos 944
+      pos 1139
+      pos 1387
+      pos 1537
+      pos 1873
+  term state
+    doc 0
+      freq 1
+      pos 73
+  term statement
+    doc 0
+      freq 1
+      pos 1553
+  term status
+    doc 0
+      freq 2
+      pos 33
+      pos 75
+  term std
+    doc 0
+      freq 1
+      pos 68
+  term step
+    doc 0
+      freq 4
+      pos 848
+      pos 865
+      pos 919
+      pos 927
+  term string
+    doc 0
+      freq 2
+      pos 363
+      pos 1011
+  term stronger
+    doc 0
+      freq 1
+      pos 595
+  term subject
+    doc 0
+      freq 1
+      pos 1563
+  term subkey
+    doc 0
+      freq 1
+      pos 985
+  term submission
+    doc 0
+      freq 1
+      pos 1350
+  term submitted
+    doc 0
+      freq 3
+      pos 123
+      pos 246
+      pos 265
+  term such
+    doc 0
+      freq 6
+      pos 228
+      pos 400
+      pos 713
+      pos 1706
+      pos 1728
+      pos 1786
+  term suggestion
+    doc 0
+      freq 1
+      pos 1424
+  term suggestions
+    doc 0
+      freq 1
+      pos 53
+  term support
+    doc 0
+      freq 2
+      pos 1181
+      pos 1867
+  term symmetric
+    doc 0
+      freq 3
+      pos 224
+      pos 396
+      pos 700
+  term systems
+    doc 0
+      freq 1
+      pos 723
+  term t
+    doc 0
+      freq 10
+      pos 457
+      pos 460
+      pos 476
+      pos 500
+      pos 870
+      pos 882
+      pos 912
+      pos 921
+      pos 931
+      pos 1238
+  term taken
+    doc 0
+      freq 1
+      pos 822
+  term takes
+    doc 0
+      freq 1
+      pos 1664
+  term task
+    doc 0
+      freq 1
+      pos 1621
+  term technology
+    doc 0
+      freq 5
+      pos 100
+      pos 199
+      pos 1188
+      pos 1693
+      pos 1834
+  term test
+    doc 0
+      freq 6
+      pos 959
+      pos 962
+      pos 1004
+      pos 1016
+      pos 1030
+      pos 1050
+  term tetsu
+    doc 0
+      freq 2
+      pos 1316
+      pos 1340
+  term text
+    doc 0
+      freq 1
+      pos 1158
+  term than
+    doc 0
+      freq 2
+      pos 600
+      pos 731
+  term thank
+    doc 0
+      freq 1
+      pos 1170
+  term that
+    doc 0
+      freq 9
+      pos 219
+      pos 374
+      pos 806
+      pos 1092
+      pos 1636
+      pos 1680
+      pos 1718
+      pos 1831
+      pos 1835
+  term thayer
+    doc 0
+      freq 1
+      pos 1402
+  term the
+    doc 0
+      freq 103
+      pos 23
+      pos 46
+      pos 59
+      pos 63
+      pos 71
+      pos 89
+      pos 94
+      pos 105
+      pos 116
+      pos 131
+      pos 144
+      pos 150
+      pos 154
+      pos 161
+      pos 183
+      pos 193
+      pos 204
+      pos 230
+      pos 240
+      pos 258
+      pos 278
+      pos 285
+      pos 295
+      pos 303
+      pos 308
+      pos 312
+      pos 370
+      pos 379
+      pos 383
+      pos 402
+      pos 432
+      pos 442
+      pos 447
+      pos 477
+      pos 491
+      pos 501
+      pos 542
+      pos 548
+      pos 555
+      pos 562
+      pos 567
+      pos 574
+      pos 583
+      pos 608
+      pos 623
+      pos 635
+      pos 642
+      pos 649
+      pos 653
+      pos 658
+      pos 663
+      pos 666
+      pos 685
+      pos 757
+      pos 799
+      pos 809
+      pos 817
+      pos 855
+      pos 867
+      pos 950
+      pos 965
+      pos 974
+      pos 1079
+      pos 1094
+      pos 1109
+      pos 1119
+      pos 1133
+      pos 1145
+      pos 1180
+      pos 1183
+      pos 1184
+      pos 1221
+      pos 1240
+      pos 1304
+      pos 1393
+      pos 1431
+      pos 1466
+      pos 1543
+      pos 1556
+      pos 1565
+      pos 1580
+      pos 1589
+      pos 1601
+      pos 1603
+      pos 1614
+      pos 1618
+      pos 1637
+      pos 1640
+      pos 1662
+      pos 1668
+      pos 1687
+      pos 1692
+      pos 1699
+      pos 1732
+      pos 1756
+      pos 1769
+      pos 1783
+      pos 1800
+      pos 1810
+      pos 1845
+      pos 1848
+      pos 1857
+      pos 1864
+  term their
+    doc 0
+      freq 1
+      pos 1584
+  term there
+    doc 0
+      freq 1
+      pos 1087
+  term therein
+    doc 0
+      freq 1
+      pos 1579
+  term these
+    doc 0
+      freq 1
+      pos 961
+  term this
+    doc 0
+      freq 16
+      pos 35
+      pos 37
+      pos 77
+      pos 81
+      pos 141
+      pos 166
+      pos 300
+      pos 323
+      pos 454
+      pos 1085
+      pos 1157
+      pos 1560
+      pos 1586
+      pos 1696
+      pos 1794
+      pos 1841
+  term those
+    doc 0
+      freq 1
+      pos 968
+  term three
+    doc 0
+      freq 1
+      pos 1467
+  term track
+    doc 0
+      freq 10
+      pos 13
+      pos 43
+      pos 178
+      pos 486
+      pos 752
+      pos 945
+      pos 1140
+      pos 1388
+      pos 1538
+      pos 1874
+  term transform
+    doc 0
+      freq 1
+      pos 1127
+  term truncate
+    doc 0
+      freq 3
+      pos 456
+      pos 459
+      pos 930
+  term truncated
+    doc 0
+      freq 7
+      pos 499
+      pos 502
+      pos 793
+      pos 872
+      pos 881
+      pos 911
+      pos 913
+  term truncates
+    doc 0
+      freq 1
+      pos 541
+  term truncation
+    doc 0
+      freq 2
+      pos 820
+      pos 979
+  term tt
+    doc 0
+      freq 3
+      pos 883
+      pos 929
+      pos 934
+  term type
+    doc 0
+      freq 1
+      pos 1128
+  term unauthorized
+    doc 0
+      freq 1
+      pos 632
+  term under
+    doc 0
+      freq 1
+      pos 1705
+  term underlying
+    doc 0
+      freq 1
+      pos 568
+  term university
+    doc 0
+      freq 3
+      pos 14
+      pos 1488
+      pos 1524
+  term unlimited
+    doc 0
+      freq 1
+      pos 84
+  term us
+    doc 0
+      freq 1
+      pos 1192
+  term usage
+    doc 0
+      freq 1
+      pos 304
+  term use
+    doc 0
+      freq 6
+      pos 30
+      pos 145
+      pos 1095
+      pos 1638
+      pos 1690
+      pos 1784
+  term used
+    doc 0
+      freq 3
+      pos 376
+      pos 678
+      pos 782
+  term useful
+    doc 0
+      freq 1
+      pos 1176
+  term users
+    doc 0
+      freq 1
+      pos 1792
+  term validate
+    doc 0
+      freq 1
+      pos 648
+  term validating
+    doc 0
+      freq 1
+      pos 652
+  term validity
+    doc 0
+      freq 1
+      pos 1669
+  term value
+    doc 0
+      freq 3
+      pos 444
+      pos 449
+      pos 1123
+  term vectors
+    doc 0
+      freq 1
+      pos 960
+  term verification
+    doc 0
+      freq 1
+      pos 609
+  term verlag
+    doc 0
+      freq 2
+      pos 1337
+      pos 1481
+  term vol
+    doc 0
+      freq 1
+      pos 1473
+  term w911nf
+    doc 0
+      freq 1
+      pos 1206
+  term warranties
+    doc 0
+      freq 2
+      pos 1625
+      pos 1651
+  term warranty
+    doc 0
+      freq 1
+      pos 1635
+  term washington
+    doc 0
+      freq 3
+      pos 16
+      pos 1490
+      pos 1526
+  term we
+    doc 0
+      freq 2
+      pos 1166
+      pos 1178
+  term well
+    doc 0
+      freq 1
+      pos 638
+  term were
+    doc 0
+      freq 1
+      pos 1159
+  term which
+    doc 0
+      freq 5
+      pos 112
+      pos 272
+      pos 540
+      pos 725
+      pos 1702
+  term while
+    doc 0
+      freq 2
+      pos 625
+      pos 705
+  term will
+    doc 0
+      freq 2
+      pos 807
+      pos 1643
+  term with
+    doc 0
+      freq 9
+      pos 31
+      pos 522
+      pos 790
+      pos 861
+      pos 973
+      pos 1078
+      pos 1100
+      pos 1430
+      pos 1734
+  term working
+    doc 0
+      freq 1
+      pos 1
+  term workshop
+    doc 0
+      freq 1
+      pos 1439
+  term would
+    doc 0
+      freq 1
+      pos 1167
+  term writing
+    doc 0
+      freq 1
+      pos 1086
+  term www.ietf.org
+    doc 0
+      freq 1
+      pos 1808
+  term xcbc
+    doc 0
+      freq 6
+      pos 140
+      pos 264
+      pos 282
+      pos 299
+      pos 1449
+      pos 1451
+  term xcbca
+    doc 0
+      freq 3
+      pos 270
+      pos 1165
+      pos 1417
+  term xcbcb
+    doc 0
+      freq 2
+      pos 271
+      pos 1454
+field titolo
+  term rfc4494.txt
+    doc 0
+      freq 1
+      pos 0
+END
+checksum 00000000003803501108
+table of contents, size: 4
+  filename: _tz.fld
+    start: 23
+    end: 15626
+  filename: _tz.inf
+    start: 15649
+    end: 16429
+  filename: _tz.len
+    start: 16452
+    end: 16604
+  filename: _tz.pst
+    start: 16627
+    end: 64980
+table of contents begins at offset: 0000000000000064980
