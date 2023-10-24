@@ -91,7 +91,7 @@ public class Sercher {
 			ScoreDoc scoreDoc = hits.scoreDocs[i];
 			Document doc = searcher.doc(scoreDoc.doc); 
 			
-			System.out.println("documento: "+ doc.get("titolo")+" punteggio: "+scoreDoc.doc);
+			System.out.println("documento: "+ doc.get("titolo")+" punteggio: "+scoreDoc.score);
 			
 		}
 		
